@@ -32,3 +32,68 @@ power1_2 :: Integer -> Integer -> Integer
 power1_2 n k | k < 0 = error "power: negative argument"
 power1_2 n k = product l
    where l = [n | _ <- [1..k]]
+
+-- Part 3
+
+power2 :: Integer -> Integer -> Integer
+power2 n k | k < 0     = error "power: negative argument"
+           | k == 0    = 1
+           | odd k     = n * power2 n (k-1)
+           | otherwise = power2 (n * n) (k `div` 2)
+
+{-
+   # Part 4 a.
+
+   ## Test cases
+
+   - (1, 0) the lowest allowed value should return 1
+      - Needs to be covered as it is the base case and does
+        not enter any recursion etc.
+   - (1, -1) an unallowed value as power to a negative number
+     can not be calculated using our implementations
+   - (5, 2) a sane and easy value to prove that it works
+     as expected and correctly
+   - (-5, 2) testing a negative n whereby the result should
+     be positive with an even k
+   - (-5, 3) testing a negative n whereby the result should
+     be negative with an odd k
+
+   ## Defined inputs
+
+   - Types which are not following the function definition in
+     Integer
+-}
+
+-- Part 4 b.
+
+-- Property comparing all posible combinations of
+-- power, power1 and power2
+
+prop_power n k = let k' = abs k in
+                 power n k' == power1 n k'
+                 && power1 n k' == power2 n k'
+                 && power2 n k' == power n k'
+
+-- Part 4 c.
+
+-- Define function to get first...
+first :: (a, b) -> a
+first (a, b) = a
+
+-- ... and second item of a tuple
+second :: (a, b) -> b
+second (a, b) = b
+
+-- Define a list with tuples holding test cases as defined in 4 a
+testCases :: [(Integer, Integer)]
+testCases = [(1, 0), (1, -1), (5, 2), (-5, 2), (-5, 3)]
+
+-- Define a function which takes a list of tuples and
+-- checks the property defined in 4 b.
+runTests :: [(Integer, Integer)] -> Bool
+runTests [] = True
+runTests (x:xs) = (prop_power (first x) (second x)) && runTests xs
+
+-- Part 4 d.
+
+-- running `quickCheck prop_power` in the prompt passes 100 tests

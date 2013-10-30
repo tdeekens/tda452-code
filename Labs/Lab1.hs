@@ -13,11 +13,12 @@ power n k | k < 0 = error "power: negative argument"
 power n 0 = 1
 power n k = n * power n (k-1)
 
-{-
-   # Part 1
+-- Part 1 - Steps for power
 
-   - Steps for power: k + 1
--}
+steps :: Integer -> Integer -> Integer
+steps n k | k < 0     = error "power: negative argument"
+          | k == 0    = 1
+          | otherwise = 1 + steps n (k-1)
 
 -- Part 2 - Using replicate
 

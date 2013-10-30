@@ -61,8 +61,10 @@ power2 n k | k < 0     = error "power: negative argument"
 
    ## Defined inputs
 
-   - Types which are not following the function definition in
-     Integer
+   - Negative Integers which are not allowed for the power value
+     are caught by the functions pattern matching
+   - N and k must be of type Integer. For other
+     types (e.g. Floats) the function can currently be not be applied
 -}
 
 -- Part 4 b.

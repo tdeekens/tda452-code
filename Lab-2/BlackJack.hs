@@ -8,6 +8,8 @@ import Wrapper
 -}
 
 {-
+   # Task 3.2
+
    size hand2
      = size (Add(Card(Numeric 2) Hearts))
                 (Add (Card Jack Spades) Empty) =
@@ -17,12 +19,14 @@ import Wrapper
      = 2
 -}
 
+-- # Task 3.3
+
 -- Returns an empty hand
 empty :: Hand
 empty = Empty
 
 -- Calculates the value of a Rank
--- for Ace:
+-- Uses the default value of 11 for an Ace
 valueRank :: Rank -> Integer
 valueRank (Numeric n) = n
 valueRank Ace         = 11
@@ -32,13 +36,15 @@ valueRank _           = 10
 valueCard :: Card -> Integer
 valueCard (Card r _) = valueRank r
 
--- Calculates the number of aces in a given hand
+-- Calculates the number of Aces in a given Hand
 numberOfAces :: Hand -> Integer
 numberOfAces Empty = 0
 numberOfAces (Add (Card Ace _) hand) = 1 + numberOfAces hand
 numberOfAces (Add card hand) = numberOfAces hand
 
--- Calculates the value of the hand
+-- Calculates the value of the Hand
+-- If the value of a Hand exceeds 21 and a hand has Aces
+-- it uses value of 1 for every Ace
 value :: Hand -> Integer
 value Empty = 0
 value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInHand * 10
@@ -50,7 +56,7 @@ value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInH
 gameOver :: Hand -> Bool
 gameOver hand = value hand > 21
 
--- The latter more 'fancy' version
+-- Determines the winner among a guest and a bank
 winner :: Hand -> Hand -> Player
 winner guest bank | not (gameOver guest) && value guest > value bank = Guest
                   | gameOver bank = Guest

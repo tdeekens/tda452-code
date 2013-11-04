@@ -44,21 +44,11 @@ value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInH
    where handValue   = valueCard card + value hand
          acesInHand  = numberOfAces hand
 
-h1 = Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
-h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
-h3 = (Add (Card(Numeric 10) Diamonds) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
-
 -- Given a hand, is the player bust?
 gameOver :: Hand -> Bool
 gameOver hand = value hand > 21
 
-winner' :: Hand -> Hand -> Player
-winner' guest bank | gameOver guest = Bank
-                   | gameOver bank = Guest
-                   | value guest == value bank = Bank
-                   | value guest > value bank = Guest
-                   | otherwise = Bank
-
+-- The latter more 'fancy' version
 winner :: Hand -> Hand -> Player
 winner guest bank | not (gameOver guest) && value guest > value bank = Guest
                   | gameOver bank = Guest

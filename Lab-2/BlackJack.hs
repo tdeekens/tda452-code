@@ -1,4 +1,5 @@
-module BlackJack where import Cards
+module BlackJack where
+import Cards
 import Wrapper
 
 {-
@@ -14,10 +15,6 @@ import Wrapper
      = 2
 -}
 
-module BlackJack where
-import Cards
-import Wrapper
-
 -- Returns an empty hand
 empty :: Hand
 empty = Empty
@@ -26,10 +23,8 @@ empty = Empty
 -- for Ace:
 valueRank :: Rank -> Integer
 valueRank (Numeric n) = n
-valueRank Jack        = 10
-valueRank Queen       = 10
-valueRank King        = 10
 valueRank Ace         = 11
+valueRank _           = 10
 
 -- Calculates the value of a Card
 valueCard :: Card -> Integer
@@ -44,13 +39,13 @@ numberOfAces (Add card hand) = numberOfAces hand
 -- Calculates the value of the hand
 value :: Hand -> Integer
 value Empty = 0
-value (Add card hand) = valueCard card + value hand
+value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInHand * 10
+                      | otherwise = handValue
+   where handValue   = valueCard card + value hand
+         acesInHand  = numberOfAces hand
 
-hand5 = Add (Card(Numeric 7) Diamonds) (Add (Card Jack Hearts) (Add (Card Jack Spades) Empty))
+hand5 = Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
 
 -- Given a hand, is the player bust?
 gameOver :: Hand -> Bool
 gameOver hand = value hand > 21
-
--- Defines a winner among the guest and the bank
-winner :: Hand → Hand → Player 

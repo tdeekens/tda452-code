@@ -47,7 +47,7 @@ numberOfAces (Add card hand) = numberOfAces hand
 -- it uses value of 1 for every Ace
 value :: Hand -> Integer
 value Empty = 0
-value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInHand * 10
+value (Add card hand) | handValue > 21 && acesInHand > 0 = handValue - acesInHand * 10
                       | otherwise = handValue
    where handValue   = valueCard card + value hand
          acesInHand  = numberOfAces hand

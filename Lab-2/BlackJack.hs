@@ -1,10 +1,9 @@
 module BlackJack where
 import Cards
 import Wrapper
-import Test.QuickCheck
 
 {-
-   Lab Assignment 2
+   Lab Assignment 2 A
    Anna Averianova & Tobias Deekens, 2013
 -}
 
@@ -47,10 +46,11 @@ numberOfAces (Add _ hand)            = numberOfAces hand
 -- If the value of a Hand exceeds 21 and a hand has Aces
 -- it uses value of 1 for every Ace
 value :: Hand -> Integer
+value Empty = 0
 value (Add card hand) | handValue > 21 = handValue - acesInHand * 10
                       | otherwise      = handValue
-   where handValue   = valueCard card + value hand
-         acesInHand  = numberOfAces (Add card hand)
+   where handValue    = valueCard card + value hand
+         acesInHand   = numberOfAces (Add card hand)
 
 -- Given a hand, is the player bust?
 gameOver :: Hand -> Bool
@@ -59,34 +59,5 @@ gameOver hand = value hand > 21
 -- Determines the winner among a guest and a bank
 winner :: Hand -> Hand -> Player
 winner guest bank | not (gameOver guest) && value guest > value bank = Guest
-                  | gameOver bank                                    = Guest
+                  | not (gameOver guest) && gameOver bank            = Guest
                   | otherwise                                        = Bank
-
--- Merges two hands by putting the first hand on top of the second one
-(<+) :: Hand -> Hand -> Hand
-Empty         <+ h2 = h2
-(Add card h1) <+ h2 = (Add card (h1 <+ h2))
-
-prop_onTopOf_assoc :: Hand -> Hand -> Hand -> Bool
-prop_onTopOf_assoc p1 p2 p3 = p1 <+ (p2 <+ p3) == (p1 <+ p2) <+ p3
-
-prop_size_onTopOf :: Hand -> Hand -> Bool
-prop_size_onTopOf p1 p2 = size (p1 <+ p2) == size p1 + size p2
-
--- Returns a full deck of cards listing 52 cards in total
---fullDeck :: Hand
--- foreach 2..10 (is a Card) fullSuits
--- foreach Rank fullSuits
-
--- Returns a partial deck containing all suits for a card
---fullSuits :: Card
--- foreach Suit-type pair with Card
-
-h1 = (Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))))
-h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
-h3 = (Add (Card(Numeric 10) Diamonds) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
-h4 = (Add (Card Ace Spades) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
-
-h5 = (Add (Card(Numeric 5) Diamonds) Empty)
-h6 = (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))
-h7 = (Add (Card(Numeric 7) Spades) Empty)

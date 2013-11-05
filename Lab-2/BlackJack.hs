@@ -1,6 +1,7 @@
 module BlackJack where
 import Cards
 import Wrapper
+import Test.QuickCheck
 
 {-
    Lab Assignment 2
@@ -60,7 +61,22 @@ winner guest bank | not (gameOver guest) && value guest > value bank = Guest
                   | gameOver bank                                    = Guest
                   | otherwise                                        = Bank
 
-h1 = Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
+-- Merges two hands by putting the first hand on top of the second one
+(<+) :: Hand -> Hand -> Hand
+Empty         <+ h2 = h2
+(Add card h1) <+ h2 = (Add card (h1 <+ h2))
+
+prop_onTopOf_assoc :: Hand -> Hand -> Hand -> Bool
+prop_onTopOf_assoc p1 p2 p3 = p1 <+ (p2 <+ p3) == (p1 <+ p2) <+ p3
+
+prop_size_onTopOf :: Hand -> Hand -> Bool
+prop_size_onTopOf p1 p2 = size (p1 <+ p2) == size p1 + size p2
+
+h1 = (Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))))
 h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
 h3 = (Add (Card(Numeric 10) Diamonds) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
 h4 = (Add (Card Ace Spades) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
+
+h5 = (Add (Card(Numeric 5) Diamonds) Empty)
+h6 = (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))
+h7 = (Add (Card(Numeric 7) Spades) Empty)

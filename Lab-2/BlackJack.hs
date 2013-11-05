@@ -46,6 +46,7 @@ numberOfAces (Add _ hand)            = numberOfAces hand
 -- Calculates the value of a Hand
 -- If the value of a Hand exceeds 21 and a hand has Aces
 -- it uses value of 1 for every Ace
+value :: Hand -> Integer
 value (Add card hand) | handValue > 21 = handValue - acesInHand * 10
                       | otherwise      = handValue
    where handValue   = valueCard card + value hand

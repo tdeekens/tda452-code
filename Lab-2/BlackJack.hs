@@ -47,10 +47,15 @@ numberOfAces (Add card hand) = numberOfAces hand
 -- it uses value of 1 for every Ace
 value :: Hand -> Integer
 value Empty = 0
-value (Add card hand) | (handValue > 21 && acesInHand > 0) = handValue - acesInHand * 10
-                      | otherwise = handValue
-   where handValue   = valueCard card + value hand
-         acesInHand  = numberOfAces hand
+value (Add card hand) | handValue > 21       = handValue - acesInHand * 10
+                      | otherwise            = handValue
+   where handValue    = valueCard card + value hand
+         acesInHand   = numberOfAces (Add card hand)
+
+h1 = Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
+h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
+h3 = (Add (Card(Numeric 10) Diamonds) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
+h4 = (Add (Card Ace Spades) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
 
 -- Given a hand, is the player bust?
 gameOver :: Hand -> Bool

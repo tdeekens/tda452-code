@@ -42,15 +42,18 @@ numberOfAces Empty                   = 0
 numberOfAces (Add (Card Ace _) hand) = 1 + numberOfAces hand
 numberOfAces (Add _ hand)            = numberOfAces hand
 
+handValue :: Hand -> Integer
+handValue Empty            = 0
+handValue (Add card hand)  = (valueCard card) + (handValue hand)
+
 -- Calculates the value of a Hand
 -- If the value of a Hand exceeds 21 and a hand has Aces
 -- it uses value of 1 for every Ace
 value :: Hand -> Integer
-value Empty = 0
-value (Add card hand) | handValue > 21 = handValue - acesInHand * 10
-                      | otherwise      = handValue
-   where handValue    = valueCard card + value hand
-         acesInHand   = numberOfAces (Add card hand)
+value hand | score > 21 = score - (10 * aces)
+           | otherwise = score
+  where score = handValue hand
+        aces  = numberOfAces hand
 
 -- Given a hand, is the player bust?
 gameOver :: Hand -> Bool

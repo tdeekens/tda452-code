@@ -42,9 +42,11 @@ numberOfAces Empty                   = 0
 numberOfAces (Add (Card Ace _) hand) = 1 + numberOfAces hand
 numberOfAces (Add _ hand)            = numberOfAces hand
 
-handValue :: Hand -> Integer
-handValue Empty            = 0
-handValue (Add card hand)  = (valueCard card) + (handValue hand)
+-- Helper function that calculates the value of given hand
+-- using the score of the hands' cards (Aces always 11)
+valueHand :: Hand -> Integer
+valueHand Empty            = 0
+valueHand (Add card hand)  = (valueCard card) + (valueHand hand)
 
 -- Calculates the value of a Hand
 -- If the value of a Hand exceeds 21 and a hand has Aces
@@ -52,7 +54,7 @@ handValue (Add card hand)  = (valueCard card) + (handValue hand)
 value :: Hand -> Integer
 value hand | score > 21 = score - (10 * aces)
            | otherwise = score
-  where score = handValue hand
+  where score = valueHand hand
         aces  = numberOfAces hand
 
 -- Given a hand, is the player bust?

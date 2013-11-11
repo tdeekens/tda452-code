@@ -79,13 +79,32 @@ prop_size_onTopOf :: Hand -> Hand -> Bool
 prop_size_onTopOf p1 p2 = size (p1 <+ p2) == size p1 + size p2
 
 -- Returns a full deck of cards listing 52 cards in total
---fullDeck :: Hand
--- foreach 2..10 (is a Card) fullSuits
--- foreach Rank fullSuits
+fullDeck :: Hand
+fullDeck =
+  foldr (<+) Empty crossover
+  where crossover = map (\s -> fullSuits s) [Hearts, Spades, Diamonds, Clubs]
 
--- Returns a partial deck containing all suits for a card
---fullSuits :: Card
--- foreach Suit-type pair with Card
+-- Returns a partial deck containing all cards of a suit
+fullSuits :: Suit -> Hand
+fullSuits s =
+  foldr (<+) Empty cardList
+  where cardList =  [Add (Card(Numeric i) s) Empty | i <- [2..10]]
+                    ++ [Add (Card p s) Empty | p <- [Ace, King, Jack, Queen]]
+
+-- Draws a card from a deck puts it into the hand while erroring on an empty deck
+draw :: Hand -> Hand -> (Hand, Hand)
+draw Empty h = error "draw: The deck is empty."
+draw (Add c d) h = (d, Add c h)
+
+-- Plays a bank starting with an empty hand following the given rules
+playBank :: Hand -> Hand
+playBank hand | value h <= 16  = playBank (Add playBank' deck hand)
+              | otherwise      = hand
+  where deck = fullDeck
+
+playBank' :: Hand -> Hand -> Card
+playBank'
+  where (deck′, bankHand′) = draw deck bankHand
 
 h1 = (Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))))
 h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))

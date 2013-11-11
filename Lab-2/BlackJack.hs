@@ -96,21 +96,12 @@ draw :: Hand -> Hand -> (Hand, Hand)
 draw Empty h = error "draw: The deck is empty."
 draw (Add c d) h = (d, Add c h)
 
--- Plays a bank starting with an empty hand following the given rules
+-- Plays a bank starting with an empty hand following the given rules using playBank'
 playBank :: Hand -> Hand
-playBank hand | value h <= 16  = playBank (Add playBank' deck hand)
-              | otherwise      = hand
-  where deck = fullDeck
+playBank deck = playBank' deck Empty
 
-playBank' :: Hand -> Hand -> Card
-playBank'
-  where (deck′, bankHand′) = draw deck bankHand
-
-h1 = (Add (Card Ace Spades) (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))))
-h2 = (Add (Card(Numeric 5) Diamonds) (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty)))
-h3 = (Add (Card(Numeric 10) Diamonds) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
-h4 = (Add (Card Ace Spades) (Add (Card Jack Diamonds) (Add (Card Jack Spades) Empty)))
-
-h5 = (Add (Card(Numeric 5) Diamonds) Empty)
-h6 = (Add (Card Jack Diamonds) (Add (Card Ace Spades) Empty))
-h7 = (Add (Card(Numeric 7) Spades) Empty)
+-- Helper function playing a hand with a deck until a threshold
+playBank' :: Hand -> Hand -> Hand
+playBank' deck hand | value hand > 16 = hand
+                    | otherwise       = playBank' (fst play) (snd play)
+  where play = draw deck hand

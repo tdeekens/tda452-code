@@ -1,6 +1,8 @@
 module BlackJack where
 import Cards
 import Wrapper
+import System.Random
+import Test.QuickCheck
 
 {-
    Lab Assignment 2 A
@@ -105,3 +107,47 @@ playBank' :: Hand -> Hand -> Hand
 playBank' deck hand | value hand > 16 = hand
                     | otherwise       = playBank' (fst play) (snd play)
   where play = draw deck hand
+
+-- Shuffles a hand of cards using a random number generator
+shuffle :: StdGen -> Hand -> Hand
+shuffle _ Empty      = Empty
+shuffle g unShuffled = Add removed (shuffle g' partial)
+   where
+      handSize               = size unShuffled
+      (idx, g')              = randomR (1, handSize) g
+      (partial, removed)     = removeCard unShuffled idx Empty
+
+-- Removes a card from a Hand one at Integer and moves it to the Hand two
+-- returning the changed Hand one as a tuple in (Hand one, removed Card)
+removeCard :: Hand -> Integer -> Hand -> (Hand, Card)
+removeCard (Add card h1) idx h2
+   | (idx > size (Add card h1)) || (idx < 0) = error "Removal idx out of bounds."
+   | idx == 1                                = (h1 <+ h2, card)
+   | otherwise                               = removeCard h1 (idx-1) (Add card h2)
+
+-- Checks if a Card is contained in a Hand
+belongsTo :: Card -> Hand -> Bool
+c `belongsTo` Empty      = False
+c `belongsTo` (Add c' h) = c == c' || c `belongsTo` h
+
+prop_shuffle_sameCards :: StdGen -> Card -> Hand -> Bool
+prop_shuffle_sameCards g c h =
+   c `belongsTo` h == c `belongsTo` shuffle g h
+
+prop_size_shuffle :: StdGen -> Hand -> Bool
+prop_size_shuffle g hand =
+   size hand == size (shuffle g hand)
+
+implementation = Interface {
+   iEmpty = empty
+   , iFullDeck = fullDeck
+   , iValue = value
+   , iGameOver = gameOver
+   , iWinner = winner
+   , iDraw = draw
+   , iPlayBank = playBank
+   , iShuffle = shuffle
+}
+
+main :: IO ()
+main = runGame implementation

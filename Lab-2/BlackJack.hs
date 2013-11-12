@@ -48,7 +48,7 @@ numberOfAces (Add _ hand)            = numberOfAces hand
 -- using the score of the hands' cards (Aces always 11)
 valueHand :: Hand -> Integer
 valueHand Empty            = 0
-valueHand (Add card hand)  = (valueCard card) + (valueHand hand)
+valueHand (Add card hand)  = valueCard card + valueHand hand
 
 -- Calculates the value of a Hand
 -- If the value of a Hand exceeds 21 and a hand has Aces
@@ -72,7 +72,7 @@ winner guest bank | not (gameOver guest) && value guest > value bank = Guest
 -- Merges two hands by putting the first hand on top of the second one
 (<+) :: Hand -> Hand -> Hand
 Empty         <+ h2 = h2
-(Add card h1) <+ h2 = (Add card (h1 <+ h2))
+(Add card h1) <+ h2 = Add card (h1 <+ h2)
 
 prop_onTopOf_assoc :: Hand -> Hand -> Hand -> Bool
 prop_onTopOf_assoc p1 p2 p3 = p1 <+ (p2 <+ p3) == (p1 <+ p2) <+ p3
@@ -84,7 +84,7 @@ prop_size_onTopOf p1 p2 = size (p1 <+ p2) == size p1 + size p2
 fullDeck :: Hand
 fullDeck =
   foldr (<+) Empty crossover
-  where crossover = map (\s -> fullSuits s) [Hearts, Spades, Diamonds, Clubs]
+  where crossover = map fullSuits [Hearts, Spades, Diamonds, Clubs]
 
 -- Returns a partial deck containing all cards of a suit
 fullSuits :: Suit -> Hand
@@ -105,7 +105,7 @@ playBank deck = playBank' deck Empty
 -- Helper function playing a hand with a deck until a threshold
 playBank' :: Hand -> Hand -> Hand
 playBank' deck hand | value hand > 16 = hand
-                    | otherwise       = playBank' (fst play) (snd play)
+                    | otherwise       = uncurry playBank' play
   where play = draw deck hand
 
 -- Shuffles a hand of cards using a random number generator

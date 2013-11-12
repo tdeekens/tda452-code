@@ -5,7 +5,7 @@ import System.Random
 import Test.QuickCheck
 
 {-
-   Lab Assignment 2 A
+   Lab Assignment 2
    Anna Averianova & Tobias Deekens, 2013
 -}
 
@@ -74,9 +74,12 @@ winner guest bank | not (gameOver guest) && value guest > value bank = Guest
 Empty         <+ h2 = h2
 (Add card h1) <+ h2 = Add card (h1 <+ h2)
 
+-- Checks associativeness of the <+ function
 prop_onTopOf_assoc :: Hand -> Hand -> Hand -> Bool
 prop_onTopOf_assoc p1 p2 p3 = p1 <+ (p2 <+ p3) == (p1 <+ p2) <+ p3
 
+-- The size of the combined hand should be
+-- the sum of the sizes of the two individual hands
 prop_size_onTopOf :: Hand -> Hand -> Bool
 prop_size_onTopOf p1 p2 = size (p1 <+ p2) == size p1 + size p2
 
@@ -93,16 +96,18 @@ fullSuits s =
   where cardList =  [Add (Card(Numeric i) s) Empty | i <- [2..10]]
                     ++ [Add (Card p s) Empty | p <- [Ace, King, Jack, Queen]]
 
--- Draws a card from a deck puts it into the hand while erroring on an empty deck
+-- Draws a card from a deck
+-- and puts it into the hand while erroring on an empty deck
 draw :: Hand -> Hand -> (Hand, Hand)
 draw Empty h = error "draw: The deck is empty."
 draw (Add c d) h = (d, Add c h)
 
--- Plays a bank starting with an empty hand following the given rules using playBank'
+-- Plays a bank starting with an empty hand.
+-- Draws cards until its score is 16 or higher.
 playBank :: Hand -> Hand
 playBank deck = playBank' deck Empty
 
--- Helper function playing a hand with a deck until a threshold
+-- Helper function playing a hand with a deck until its score is 16 or higher
 playBank' :: Hand -> Hand -> Hand
 playBank' deck hand | value hand > 16 = hand
                     | otherwise       = uncurry playBank' play
@@ -117,23 +122,24 @@ shuffle g unShuffled = Add removed (shuffle g' partial)
       (idx, g')              = randomR (1, handSize) g
       (partial, removed)     = removeCard unShuffled idx Empty
 
--- Removes a card from a Hand one at Integer and moves it to the Hand two
--- returning the changed Hand one as a tuple in (Hand one, removed Card)
+-- Removes a card from a hand1 at given position and moves it to the hand2.
+-- Returns a tuple of the changed Hand1 and removed card
 removeCard :: Hand -> Integer -> Hand -> (Hand, Card)
 removeCard (Add card h1) idx h2
-   | (idx > size (Add card h1)) || (idx < 0) = error "Removal idx out of bounds."
-   | idx == 1                                = (h1 <+ h2, card)
-   | otherwise                               = removeCard h1 (idx-1) (Add card h2)
+   | idx == 1    = (h1 <+ h2, card)
+   | otherwise   = removeCard h1 (idx-1) (Add card h2)
 
--- Checks if a Card is contained in a Hand
+-- Checks if a Card belongs to a Hand
 belongsTo :: Card -> Hand -> Bool
 c `belongsTo` Empty      = False
 c `belongsTo` (Add c' h) = c == c' || c `belongsTo` h
 
+-- Checks that a card remains in a hand after shuffling a hand
 prop_shuffle_sameCards :: StdGen -> Card -> Hand -> Bool
 prop_shuffle_sameCards g c h =
    c `belongsTo` h == c `belongsTo` shuffle g h
 
+-- Checks that the size of the hand is preserved by shuffle
 prop_size_shuffle :: StdGen -> Hand -> Bool
 prop_size_shuffle g hand =
    size hand == size (shuffle g hand)

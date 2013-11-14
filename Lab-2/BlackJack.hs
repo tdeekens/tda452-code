@@ -109,7 +109,7 @@ playBank deck = playBank' deck Empty
 
 -- Helper function playing a hand with a deck until its score is 16 or higher
 playBank' :: Hand -> Hand -> Hand
-playBank' deck hand | value hand > 16 = hand
+playBank' deck hand | value hand >= 16 = hand
                     | otherwise       = uncurry playBank' play
   where play = draw deck hand
 

@@ -1,6 +1,7 @@
 module Sudoku where
 
 import Test.QuickCheck
+import Data.Maybe
 
 -------------------------------------------------------------------------
 
@@ -9,22 +10,44 @@ data Sudoku = Sudoku { rows :: [[Maybe Int]] }
 
 -- allBlankSudoku is a sudoku with just blanks
 allBlankSudoku :: Sudoku
-allBlankSudoku = undefined
+allBlankSudoku = Sudoku (replicate 9 (replicate 9 Nothing))
 
 -- isSudoku sud checks if sud is really a valid representation of a sudoku
 -- puzzle
 isSudoku :: Sudoku -> Bool
-isSudoku = undefined
+isSudoku s = rowCount == 9 && and (map isValidRow rows')
+  where
+    rows'     = rows s
+    rowCount  = length rows'
+    isValidRow :: [Maybe Int] -> Bool
+    isValidRow r
+      = length (filter
+          (\ x -> isNothing x || fromJust x >= 1 && fromJust x <= 9) r) == 9
 
 -- isSolved sud checks if sud is already solved, i.e. there are no blanks
 isSolved :: Sudoku -> Bool
-isSolved = undefined
+isSolved s = isSudoku s && and (map isRowSolved rows')
+  where
+    rows' = rows s
+    isRowSolved :: [Maybe Int] -> Bool
+    isRowSolved r = and (map isNothing r) -- as field boundaries are checked by isSudoku
 
 -------------------------------------------------------------------------
 
 -- printSudoku sud prints a representation of the sudoku sud on the screen
 printSudoku :: Sudoku -> IO ()
-printSudoku = undefined
+printSudoku s = do
+                  rowsStr <- map printRow rows'
+                  putStr $ unlines rowsStr
+                  return ()
+  where
+    rows' = rows s
+    printRow :: [Maybe Int] -> String
+    printRow []     = "\n"
+    printRow (x:xs) = printCell x ++ printRow xs
+    printCell :: Maybe Int -> String
+    printCell Nothing = "."
+    printCell cell    = show $ fromJust cell
 
 -- readSudoku file reads from the file, and either delivers it, or stops
 -- if the file did not contain a sudoku
@@ -47,7 +70,7 @@ instance Arbitrary Sudoku where
 
 -- Example Sudoku
 example :: Sudoku
- example =
+example =
    Sudoku
      [ [Just 3, Just 6, Nothing,Nothing,Just 7, Just 1, Just 2, Nothing,Nothing]
      , [Nothing,Just 5, Nothing,Nothing,Nothing,Nothing,Just 1, Just 8, Nothing]

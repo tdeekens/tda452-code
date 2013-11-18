@@ -37,11 +37,11 @@ isSolved s = isSudoku s && and (map isRowSolved rows')
 -- printSudoku sud prints a representation of the sudoku sud on the screen
 printSudoku :: Sudoku -> IO ()
 printSudoku s = do
-                  putStr (unlines (map printRow rows')) 
+                  putStr (unlines (map printRow rows'))
   where
     rows' = rows s
     printRow :: [Maybe Int] -> String
-    printRow []     = "\n"
+    printRow []     = ""
     printRow (x:xs) = printCell x ++ printRow xs
     printCell :: Maybe Int -> String
     printCell Nothing = "."

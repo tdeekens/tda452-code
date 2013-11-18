@@ -2,6 +2,7 @@ module Sudoku where
 
 import Test.QuickCheck
 import Data.Maybe
+import Data.Char
 
 -------------------------------------------------------------------------
 
@@ -50,7 +51,17 @@ printSudoku s = do
 -- readSudoku file reads from the file, and either delivers it, or stops
 -- if the file did not contain a sudoku
 readSudoku :: FilePath -> IO Sudoku
-readSudoku = undefined
+readSudoku fp = do
+                  contents <- readFile fp
+                  return ( parseSudoku contents )
+  where
+    parseSudoku :: String -> Sudoku
+    parseSudoku s = Sudoku (map parseRow (lines s))
+    parseRow :: String -> [Maybe Int]
+    parseRow r = map parseCell (words r)
+    parseCell :: String -> Maybe Int
+    parseCell c | c == "."  = Nothing
+                | otherwise = Just (read c::Int)
 
 -------------------------------------------------------------------------
 

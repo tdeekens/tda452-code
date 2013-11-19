@@ -3,6 +3,7 @@ module Sudoku where
 import Test.QuickCheck
 import Data.Maybe
 import Data.Char
+import Data.List
 
 -------------------------------------------------------------------------
 
@@ -58,22 +59,55 @@ readSudoku fp = do
     parseSudoku :: String -> Sudoku
     parseSudoku s = Sudoku (map parseRow (lines s))
     parseRow :: String -> [Maybe Int]
-    parseRow r = map parseCell (words r)
-    parseCell :: String -> Maybe Int
-    parseCell c | c == "."  = Nothing
-                | otherwise = Just (read c::Int)
+    parseRow r = map parseCell r
+    parseCell :: Char -> Maybe Int
+    parseCell c | c == '.'  = Nothing
+                | otherwise = Just (ord c - ord '0')
 
 -------------------------------------------------------------------------
 
 -- cell generates an arbitrary cell in a Sudoku
 cell :: Gen (Maybe Int)
-cell = undefined
+cell = frequency
+         [(5, return Nothing),
+          (4, do c <- choose (1,9); return (Just c))]
 
 -- an instance for generating Arbitrary Sudokus
 instance Arbitrary Sudoku where
   arbitrary =
     do rows <- sequence [ sequence [ cell | j <- [1..9] ] | i <- [1..9] ]
        return (Sudoku rows)
+
+-- property indicating if a Sudoku is valid
+prop_Sudoku :: Sudoku -> Bool
+prop_Sudoku s = isSudoku s
+
+-------------------------------------------------------------------------
+
+type Block = [Maybe Int]
+
+isOkayBlock :: Block -> Bool
+isOkayBlock b = length withoutNothing == length (nub withoutNothing)
+  where
+    withoutNothing = filter isJust b
+
+blocks :: Sudoku -> [Block]
+blocks s = rows' ++ columns' ++ blocks'
+  where
+    rows'    = rows s
+    columns' = transpose rows'
+    blocks'  = rowWalker rows'
+
+rowWalker :: [[Maybe Int]] -> [[Maybe Int]]
+rowWalker r | length r == 3 = (columnWalker $ take 3 r)
+            | otherwise     = (columnWalker $ take 3 r) ++ (rowWalker $ drop 3 r)
+
+columnWalker :: [[Maybe Int]] -> [[Maybe Int]]
+columnWalker ([]:[]:[]:ws) = [[]]
+columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ columnWalker ws
+
+isOkay :: Sudoku -> Bool
+isOkay s = undefined
 
 -------------------------------------------------------------------------
 

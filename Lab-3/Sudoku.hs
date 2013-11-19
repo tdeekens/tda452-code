@@ -96,15 +96,15 @@ blocks s = rows' ++ columns' ++ blocks'
   where
     rows'    = rows s
     columns' = transpose rows'
-    blocks'  = rowWalker rows'
+    blocks'  = filter(\x -> x/=[]) (rowWalker rows')
 
 rowWalker :: [[Maybe Int]] -> [[Maybe Int]]
 rowWalker r | length r == 3 = (columnWalker $ take 3 r)
             | otherwise     = (columnWalker $ take 3 r) ++ (rowWalker $ drop 3 r)
 
 columnWalker :: [[Maybe Int]] -> [[Maybe Int]]
-columnWalker ([]:[]:[]:ws) = [[]]
-columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ columnWalker ws
+columnWalker ([]:[]:[]:[]) = [[]]
+columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ columnWalker ( (drop 3 x) : (drop 3 y) : (drop 3 z) : ws )
 
 isOkay :: Sudoku -> Bool
 isOkay s = undefined

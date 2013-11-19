@@ -107,7 +107,7 @@ columnWalker ([]:[]:[]:[]) = [[]]
 columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ columnWalker ( (drop 3 x) : (drop 3 y) : (drop 3 z) : ws )
 
 isOkay :: Sudoku -> Bool
-isOkay s = undefined
+isOkay s = all isOkayBlock (blocks s)
 
 -------------------------------------------------------------------------
 

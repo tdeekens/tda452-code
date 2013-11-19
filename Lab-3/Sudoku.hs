@@ -17,7 +17,7 @@ allBlankSudoku = Sudoku (replicate 9 (replicate 9 Nothing))
 -- isSudoku sud checks if sud is really a valid representation of a sudoku
 -- puzzle
 isSudoku :: Sudoku -> Bool
-isSudoku s = rowCount == 9 && and (map isValidRow rows')
+isSudoku s = rowCount == 9 && all isValidRow rows'
   where
     rows'     = rows s
     rowCount  = length rows'
@@ -28,18 +28,16 @@ isSudoku s = rowCount == 9 && and (map isValidRow rows')
 
 -- isSolved sud checks if sud is already solved, i.e. there are no blanks
 isSolved :: Sudoku -> Bool
-isSolved s = isSudoku s && and (map isRowSolved rows')
+isSolved s = isSudoku s && all isRowSolved rows'
   where
     rows' = rows s
-    isRowSolved :: [Maybe Int] -> Bool
-    isRowSolved r = and (map isNothing r) -- as field boundaries are checked by isSudoku
+    isRowSolved = all isNothing -- as field boundaries are checked by isSudoku
 
 -------------------------------------------------------------------------
 
 -- printSudoku sud prints a representation of the sudoku sud on the screen
 printSudoku :: Sudoku -> IO ()
-printSudoku s = do
-                  putStr (unlines (map printRow rows'))
+printSudoku s = putStr (unlines (map printRow rows'))
   where
     rows' = rows s
     printRow :: [Maybe Int] -> String
@@ -59,7 +57,7 @@ readSudoku fp = do
     parseSudoku :: String -> Sudoku
     parseSudoku s = Sudoku (map parseRow (lines s))
     parseRow :: String -> [Maybe Int]
-    parseRow r = map parseCell r
+    parseRow = map parseCell
     parseCell :: Char -> Maybe Int
     parseCell c | c == '.'  = Nothing
                 | otherwise = Just (ord c - ord '0')
@@ -80,7 +78,7 @@ instance Arbitrary Sudoku where
 
 -- property indicating if a Sudoku is valid
 prop_Sudoku :: Sudoku -> Bool
-prop_Sudoku s = isSudoku s
+prop_Sudoku = isSudoku
 
 -------------------------------------------------------------------------
 
@@ -99,12 +97,13 @@ blocks s = rows' ++ columns' ++ blocks'
     blocks'  = filter(\x -> x/=[]) (rowWalker rows')
 
 rowWalker :: [[Maybe Int]] -> [[Maybe Int]]
-rowWalker r | length r == 3 = (columnWalker $ take 3 r)
-            | otherwise     = (columnWalker $ take 3 r) ++ (rowWalker $ drop 3 r)
+rowWalker r | length r == 3 = columnWalker $ take 3 r
+            | otherwise     = columnWalker (take 3 r) ++ rowWalker (drop 3 r)
 
 columnWalker :: [[Maybe Int]] -> [[Maybe Int]]
 columnWalker ([]:[]:[]:[]) = [[]]
-columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ columnWalker ( (drop 3 x) : (drop 3 y) : (drop 3 z) : ws )
+columnWalker (x:y:z:ws)    = ((take 3 x) ++ (take 3 y) ++ (take 3 z)) :
+                                columnWalker ((drop 3 x) : (drop 3 y) : (drop 3 z) : ws)
 
 isOkay :: Sudoku -> Bool
 isOkay s = all isOkayBlock (blocks s)

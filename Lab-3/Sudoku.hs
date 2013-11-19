@@ -84,11 +84,13 @@ prop_Sudoku = isSudoku
 
 type Block = [Maybe Int]
 
+-- checks if a block is valid in following sudoku rules
 isOkayBlock :: Block -> Bool
 isOkayBlock b = length withoutNothing == length (nub withoutNothing)
   where
     withoutNothing = filter isJust b
 
+-- generates blocks from a sudoku containing rows, columns and block lists
 blocks :: Sudoku -> [Block]
 blocks s = rows' ++ columns' ++ blocks'
   where
@@ -96,18 +98,22 @@ blocks s = rows' ++ columns' ++ blocks'
     columns' = transpose rows'
     blocks'  = filter(\x -> x/=[]) (rowWalker rows')
 
+-- helper function walking the sudoku's rows in steps of three
 rowWalker :: [[Maybe Int]] -> [[Maybe Int]]
 rowWalker r | length r == 3 = columnWalker $ take 3 r
             | otherwise     = columnWalker (take 3 r) ++ rowWalker (drop 3 r)
 
+-- helper function walking the sudoku's columns in steps of three creating list of blocks
 columnWalker :: [[Maybe Int]] -> [[Maybe Int]]
 columnWalker ([]:[]:[]:[]) = [[]]
 columnWalker (x:y:z:ws)    = ((take 3 x) ++ (take 3 y) ++ (take 3 z)) :
                                 columnWalker ((drop 3 x) : (drop 3 y) : (drop 3 z) : ws)
 
+-- validates if a sudoku is valid (not solved)
 isOkay :: Sudoku -> Bool
 isOkay s = all isOkayBlock (blocks s)
 
+-- property validating sizes of blocks and their cells' length
 prop_blocks :: Sudoku -> Bool
 prop_blocks s = length blocks' == 27 && all (\b -> length b == 9) blocks'
   where

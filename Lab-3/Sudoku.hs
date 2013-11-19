@@ -109,6 +109,11 @@ columnWalker (x:y:z:ws)    = [( (take 3 x) ++ (take 3 y) ++ (take 3 z) )] ++ col
 isOkay :: Sudoku -> Bool
 isOkay s = all isOkayBlock (blocks s)
 
+prop_blocks :: Sudoku -> Bool
+prop_blocks s = length blocks' == 27 && all (\b -> length b == 9) blocks'
+  where
+    blocks' = blocks s
+
 -------------------------------------------------------------------------
 
 -- Example Sudoku

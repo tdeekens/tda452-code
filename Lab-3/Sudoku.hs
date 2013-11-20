@@ -59,7 +59,10 @@ printCell cell    = show $ fromJust cell
 readSudoku :: FilePath -> IO Sudoku
 readSudoku fp = do
                   contents <- readFile fp
-                  return ( parseSudoku contents )
+                  let sud = parseSudoku contents
+                  if isSudoku sud
+                    then return ( sud )
+                    else error "File containing invalid sud."
 
 -- parses a sud from a string
 parseSudoku :: String -> Sudoku

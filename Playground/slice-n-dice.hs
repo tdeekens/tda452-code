@@ -16,11 +16,11 @@ slice'' from size l = (head', tail')
       head' = slice' from size l
       tail' = drop (from + size) l
 
--- THIS IS A BIT FUBAR!
+-- THIS WAS A BIT FUBAR!
 -- chops a list of lists in slice of `size` starting at `op`
 -- giving a list for each vertial slice through the lists
 chunks' :: [[a]] -> Int -> [[a]]
-chunks' [[],[],[]] _ = [[]]
+chunks' [[],[],[]] _ = []
 chunks' ls         s = [heads'] ++ (chunks' tails' s)
    where
       -- list of tuples in [(head, tail)...]

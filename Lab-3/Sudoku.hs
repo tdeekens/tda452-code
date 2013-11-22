@@ -51,8 +51,8 @@ printRow = foldr ((++) . printCell) ""
 
 -- helper printing a sud cell on the screen
 printCell :: Maybe Int -> String
-printCell Nothing = "."
-printCell cell    = show $ fromJust cell
+printCell Nothing   = "."
+printCell (Just c)  = show c
 
 -- reads from the file, and either delivers it, or stops
 -- if the file did not contain a sudoku
@@ -82,8 +82,8 @@ parseCell c | c == '.'  = Nothing
 -- generates an arbitrary sud cell
 cell :: Gen (Maybe Int)
 cell = frequency
-         [(5, return Nothing),
-          (4, do c <- choose (1,9); return (Just c))]
+         [(9, return Nothing),
+          (1, do c <- choose (1,9); return (Just c))]
 
 -- an instance for generating Arbitrary Sudokus
 instance Arbitrary Sudoku where
@@ -111,17 +111,17 @@ blocks s = rows' ++ columns' ++ blocks'
   where
     rows'    = rows s
     columns' = transpose rows'
-    blocks'  = filter(not . null) (rowWalker rows')
+    blocks'  = rowWalker rows'
 
 -- helper function walking the sud's rows three at a time
 rowWalker :: [[Maybe Int]] -> [[Maybe Int]]
-rowWalker []  = [[]]
+rowWalker []  = []
 rowWalker r   = columnWalker (take 3 r) ++ rowWalker (drop 3 r)
 
 -- helper function returning a list of blocks given three rows
 columnWalker :: [[Maybe Int]] -> [[Maybe Int]]
 columnWalker (x:y:z:ws)
-  | null x = [[]]
+  | null x = []
   | otherwise = ((take 3 x) ++ (take 3 y) ++ (take 3 z)) :
                   columnWalker ((drop 3 x) : (drop 3 y) : (drop 3 z) : ws)
 

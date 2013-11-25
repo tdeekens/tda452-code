@@ -136,6 +136,45 @@ prop_blocks s = length blocks' == 27 && all (\b -> length b == 9) blocks'
   where
     blocks' = blocks s
 
+-------------------------------------------------------------------------
+
+type Pos = (Int,Int)
+
+-- given a sud returns a list of the positions in the sud that are still blank
+blanks :: Sudoku -> [Pos]
+blanks s = concat [blanksHelper (r!!idx) idx | idx <- [0..8]]
+  where r = rows s
+
+-- helper function returning positions of empty fields within a row
+blanksHelper :: [Maybe Int] -> Int -> [Pos]
+blanksHelper r idx = zip rs idxs
+  where
+    idxs  = elemIndices Nothing r
+    rs    = replicate 9 idx
+
+-- property checking that all cells in the blanks list are actually blanks
+prop_blanks :: Sudoku -> Bool
+prop_blanks s = all (\ x -> isNothing (r !! (fst x) !! (snd x))) blanks'
+  where
+    blanks' = blanks s
+    r       = rows s
+
+-- given a list, and a tuple containing an index in the list and a new value
+-- updates the given list with the new value at the given index
+(!!=) :: [a] -> (Int,a) -> [a]
+(!!=) l (idx, t) = (fst chopped) ++ [t] ++ (tail $ snd chopped)
+  where
+    chopped = splitAt idx l
+
+prop_replace :: Eq a => [a] -> (Int,a) -> Bool
+prop_replace l (idx, t) = not $ null l ==> length l == length rl
+                            && idx `elem` elemIndices t rl
+                            && rl!!idx == t
+  where
+    rl = l !!= (idx, t)
+
+-------------------------------------------------------------------------
+
 -- Example Sudoku
 example :: Sudoku
 example =

@@ -193,16 +193,9 @@ candidates s (x, y) = [1..9] \\ [fromJust x | x <- (filter isJust fll)]
     bbs = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
     fll = (rs ++ cs ++ bbs)
 
+-- Helper function returning the block number of a given position
 nthBlock :: Pos -> Int
-nthBlock (0, 0) = 1
-nthBlock (0, 1) = 2
-nthBlock (0, 2) = 3
-nthBlock (1, 0) = 4
-nthBlock (1, 1) = 5
-nthBlock (1, 2) = 6
-nthBlock (2, 0) = 7
-nthBlock (2, 1) = 8
-nthBlock (2, 2) = 9
+nthBlock (x, y) = (x * 3) + (y + 1)
 
 -------------------------------------------------------------------------
 

@@ -188,10 +188,9 @@ candidates :: Sudoku -> Pos -> [Int]
 candidates s (x, y) = [1..9] \\ [fromJust x | x <- (filter isJust fll)]
   where
     bs  = blocks s
-    rs  = bs!!x
-    cs  = bs!!(8+y)
-    bbs = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
-    fll = (rs ++ cs ++ bbs)
+    rc  = bs!!x ++ bs!!(9+y)
+    b = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
+    fll = (rc ++ b)
 
 -- Helper function returning the block number of a given position
 nthBlock :: Pos -> Int

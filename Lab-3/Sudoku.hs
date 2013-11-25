@@ -184,6 +184,26 @@ update s p c = Sudoku ( r !!= (rIdx, r!!rIdx !!= (cIdx, c)) )
     rIdx = fst p
     cIdx = snd p
 
+candidates :: Sudoku -> Pos -> [Int]
+candidates s (x, y) = [1..9] \\ [fromJust x | x <- (filter isJust fll)]
+  where
+    bs  = blocks s
+    rs  = bs!!x
+    cs  = bs!!(8+y)
+    bbs = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
+    fll = (rs ++ cs ++ bbs)
+
+nthBlock :: Pos -> Int
+nthBlock (0, 0) = 1
+nthBlock (0, 1) = 2
+nthBlock (0, 2) = 3
+nthBlock (1, 0) = 4
+nthBlock (1, 1) = 5
+nthBlock (1, 2) = 6
+nthBlock (2, 0) = 7
+nthBlock (2, 1) = 8
+nthBlock (2, 2) = 9
+
 -------------------------------------------------------------------------
 
 -- Example Sudoku

@@ -162,16 +162,27 @@ prop_blanks s = all (\ x -> isNothing (r !! (fst x) !! (snd x))) blanks'
 -- given a list, and a tuple containing an index in the list and a new value
 -- updates the given list with the new value at the given index
 (!!=) :: [a] -> (Int,a) -> [a]
-(!!=) l (idx, t) = (fst chopped) ++ [t] ++ (tail $ snd chopped)
+(!!=) l (idx, t) | ( (length l) -1 ) == idx = (fst $ splitAt idx l) ++ [t]
+                 | otherwise = (fst chopped) ++ [t] ++ (tail $ snd chopped)
   where
     chopped = splitAt idx l
 
-prop_replace :: Eq a => [a] -> (Int,a) -> Bool
-prop_replace l (idx, t) = not $ null l ==> length l == length rl
+prop_replace :: Eq a => [a] -> (Int,a) -> Property
+prop_replace l (idx, t) = not (null l) ==>
+                          idx >= 0 && idx < length l ==>
+                            length l == length rl
                             && idx `elem` elemIndices t rl
                             && rl!!idx == t
+  where rl = l !!= (idx, t)
+
+-- given a Sudoku, a position, and a new cell value, updates the given
+-- sud at the given position with the new value
+update :: Sudoku -> Pos -> Maybe Int -> Sudoku
+update s p c = Sudoku ( r !!= (rIdx, r!!rIdx !!= (cIdx, c)) )
   where
-    rl = l !!= (idx, t)
+    r    = rows s
+    rIdx = fst p
+    cIdx = snd p
 
 -------------------------------------------------------------------------
 

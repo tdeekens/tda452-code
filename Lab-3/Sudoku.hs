@@ -25,10 +25,11 @@ isSudoku s = rowCount == 9 && all isValidRow rows'
   where
     rows'     = rows s
     rowCount  = length rows'
-    isValidRow :: [Maybe Int] -> Bool
-    isValidRow r
-      = length (filter
-          (\ x -> isNothing x || fromJust x >= 1 && fromJust x <= 9) r) == 9
+
+isValidRow :: [Maybe Int] -> Bool
+isValidRow r = all (\ x -> case x of
+                      Nothing -> True
+                      Just x  -> x `elem` [1..9]) r
 
 -- checks if a sud has no blanks
 isSolved :: Sudoku -> Bool

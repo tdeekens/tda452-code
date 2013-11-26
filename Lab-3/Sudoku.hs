@@ -198,6 +198,18 @@ nthBlock (x, y) = (x * 3) + (y + 1)
 
 -------------------------------------------------------------------------
 
+solve :: Sudoku -> Maybe Sudoku
+solve s | not $ isSudoku s || not (all isOkayBlock bs)  = Nothing
+        | otherwise                                     = solve' s
+  where
+    bs = blocks s
+
+solve' :: Sudoku -> Maybe Sudoku
+solve' s = undefined
+
+-------------------------------------------------------------------------
+
+
 -- Example Sudoku
 example :: Sudoku
 example =

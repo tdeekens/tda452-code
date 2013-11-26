@@ -189,7 +189,7 @@ candidates s (x, y) = [1..9] \\ [fromJust x | x <- (filter isJust fll)]
   where
     bs  = blocks s
     rc  = bs!!x ++ bs!!(9+y)
-    b = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
+    b   = bs!!( 17 + nthBlock (x `div` 3, y `div` 3) )
     fll = (rc ++ b)
 
 -- Helper function returning the block number of a given position
@@ -198,17 +198,32 @@ nthBlock (x, y) = (x * 3) + (y + 1)
 
 -------------------------------------------------------------------------
 
+-- Solves a valid sud with okay blocks
 solve :: Sudoku -> Maybe Sudoku
-solve s | not $ isSudoku s || not (all isOkayBlock bs)  = Nothing
-        | otherwise                                     = solve' s
+solve s | not $ isSudoku s || not (all isOkayBlock blo)  = Nothing
+        | otherwise                                      = solve' s bla
   where
-    bs = blocks s
+    blo = blocks s
+    bla = blanks s
 
-solve' :: Sudoku -> Maybe Sudoku
-solve' s = undefined
+-- Solve helper filling in all the blanks calling solveCell
+solve' :: Sudoku -> [Pos] -> Maybe Sudoku
+solve' s []     = Just s
+solve' s (b:bs) = solveCell s b cs
+  where
+    cs = candidates s b
+
+-- Solves a cell at a position with a candidate
+solveCell :: Sudoku -> Pos -> [Int] -> Maybe Sudoku
+solveCell s p cs | null cs                  = Nothing
+                 | isOkay ps && isSolved ps = Just ps
+                 | isNothing pps            = solveCell s p (tail cs)
+                 | otherwise                = pps
+  where
+    ps  = update s p (Just (head cs))
+    pps = solve ps
 
 -------------------------------------------------------------------------
-
 
 -- Example Sudoku
 example :: Sudoku

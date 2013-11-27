@@ -169,6 +169,7 @@ prop_blanks s = all (\ x -> isNothing (r !! (fst x) !! (snd x))) blanks'
   where
     chopped = splitAt idx l
 
+-- property testing the !!= operator
 prop_replace :: Eq a => [a] -> (Int,a) -> Property
 prop_replace l (idx, t) = not (null l) ==>
                           idx >= 0 && idx < length l ==>
@@ -186,6 +187,8 @@ update s p c = Sudoku ( r !!= (rIdx, r!!rIdx !!= (cIdx, c)) )
     rIdx = fst p
     cIdx = snd p
 
+-- given a sud and a blank position determines which numbers could be
+-- legally written into that position
 candidates :: Sudoku -> Pos -> [Int]
 candidates s (x, y) = [1..9] \\ [fromJust x | x <- (filter isJust fll)]
   where
@@ -200,7 +203,7 @@ nthBlock (x, y) = (x * 3) + (y + 1)
 
 -------------------------------------------------------------------------
 
--- Solves a valid sud with okay blocks
+-- Tries to solve a sud by finding valid cell values
 solve :: Sudoku -> Maybe Sudoku
 solve s | (not $ isSudoku s) || (not (all isOkayBlock blo)) = Nothing
         | otherwise                                         = solve' s bla
@@ -208,7 +211,7 @@ solve s | (not $ isSudoku s) || (not (all isOkayBlock blo)) = Nothing
     blo = blocks s
     bla = blanks s
 
--- Solve helper filling in all the blanks calling solveCell
+-- Solve helper filling in all the blanks
 solve' :: Sudoku -> [Pos] -> Maybe Sudoku
 solve' s []     = Just s
 solve' s (b:bs) = solveCell s b cs
@@ -254,7 +257,7 @@ hasCellsAt s ((x, y), z) = cell == z
     r    = rows s
     cell = (r!!x)!!y
 
--- given two Sudokus checks whether the first one is a solution
+-- given two suds checks whether the first one is a solution
 -- and whether the first one is a solution of the second one
 isSolutionOf :: Sudoku -> Sudoku -> Bool
 isSolutionOf s uns = isOkay s && isSolved s
@@ -262,7 +265,7 @@ isSolutionOf s uns = isOkay s && isSolved s
   where
     rs = rows s
 
--- validates that a solution produced by solve actually is a valid solution
+-- validates that a solution produced by solve is actually a valid solution
 prop_SolveSound :: Sudoku -> Property
 prop_SolveSound original = not (isNothing solved) ==>
                               isSolutionOf (fromJust solved) original
@@ -286,6 +289,3 @@ example =
      , [Nothing,Just 8, Just 3, Nothing,Nothing,Nothing,Nothing,Just 6, Nothing]
      , [Nothing,Nothing,Just 7, Just 6, Just 9, Nothing,Nothing,Just 4, Just 3]
      ]
-
-example2 :: Sudoku
-example2 =  Sudoku [[Just 7,Just 9,Just 5,Just 4,Just 9,Just 6,Just 8,Just 8,Just 9],[Just 3,Just 9,Nothing,Just 1,Just 6,Just 5,Just 6,Just 5,Just 7],[Nothing,Just 9,Just 3,Nothing,Just 2,Just 1,Just 2,Just 3,Nothing],[Just 4,Just 7,Just 6,Just 4,Just 9,Just 6,Nothing,Just 7,Just 8],[Just 8,Just 1,Just 5,Just 8,Just 6,Just 7,Just 5,Just 3,Just 6],[Just 4,Just 1,Just 1,Just 5,Just 4,Just 9,Just 9,Nothing,Just 7],[Just 9,Just 4,Just 9,Just 3,Just 8,Nothing,Just 8,Just 9,Just 6],[Nothing,Just 5,Just 7,Nothing,Just 3,Just 3,Just 5,Just 7,Just 9],[Nothing,Just 3,Just 9,Just 5,Nothing,Just 4,Just 4,Just 5,Just 7]]

@@ -242,11 +242,15 @@ filledHelper r idx = zip (zip rs idxs) j
     rs    = replicate 9 idx
     j     = [r!!idx | idx <- idxs]
 
+hasCellsAt :: Sudoku -> (Pos, Maybe Int) -> Bool
+hasCellsAt s ((x, y), z) = cell == z
+  where
+    r    = rows s
+    cell = (r!!x)!!y
+
 isSolutionOf :: Sudoku -> Sudoku -> Bool
-isSolutionOf s uns = isOkay s && isSolved s &&
-                        (all (\ x -> (fromJust (rs!!(fst (fst x))!!(fst (snd x)))) ==
-                                (fromJust (snd x))
-                            ) (filled uns))
+isSolutionOf s uns = isOkay s && isSolved s
+                      && (all (hasCellsAt s) (filled uns))
   where
     rs = rows s
 

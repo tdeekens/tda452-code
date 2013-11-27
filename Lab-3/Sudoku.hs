@@ -257,6 +257,13 @@ isSolutionOf s uns = isOkay s && isSolved s
   where
     rs = rows s
 
+-- validates that a solution produced by solve actually is a valid solution
+prop_SolveSound :: Sudoku -> Property
+prop_SolveSound original = not (isNothing solved) ==>
+                              isSolutionOf original (fromJust solved)
+  where
+    solved   = solve original
+
 -------------------------------------------------------------------------
 
 -- Example Sudoku

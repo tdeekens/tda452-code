@@ -162,10 +162,17 @@ prop_blanks s = all (\ x -> isNothing (r !! (fst x) !! (snd x))) blanks'
 -- given a list, and a tuple containing an index in the list and a new value
 -- updates the given list with the new value at the given index
 (!!=) :: [a] -> (Int,a) -> [a]
-(!!=) l (idx, t) | ( (length l) -1 ) == idx = (fst $ splitAt idx l) ++ [t]
-                 | otherwise = (fst chopped) ++ [t] ++ (tail $ snd chopped)
+(!!=) l (idx, t) | ( (length l) - 1 ) == idx = (fst $ splitAt idx l) ++ [t]
+                 | otherwise                 = (fst chopped)
+                                               ++ [t]
+                                               ++ (tail' $ snd chopped)
   where
     chopped = splitAt idx l
+
+-- gets the tail silently without failing by returning the empty []
+tail' :: [a] -> [a]
+tail' l | null l    = l
+        | otherwise = tail l
 
 prop_replace :: Eq a => [a] -> (Int,a) -> Property
 prop_replace l (idx, t) = not (null l) ==>

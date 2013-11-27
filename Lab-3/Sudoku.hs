@@ -242,12 +242,15 @@ filledHelper r idx = zip (zip rs idxs) j
     rs    = replicate 9 idx
     j     = [r!!idx | idx <- idxs]
 
+-- checks if a sud's cell at pos has a given value
 hasCellsAt :: Sudoku -> (Pos, Maybe Int) -> Bool
 hasCellsAt s ((x, y), z) = cell == z
   where
     r    = rows s
     cell = (r!!x)!!y
 
+-- given two Sudokus checks whether the first one is a solution
+-- and whether the first one is a solution of the second one
 isSolutionOf :: Sudoku -> Sudoku -> Bool
 isSolutionOf s uns = isOkay s && isSolved s
                       && (all (hasCellsAt s) (filled uns))

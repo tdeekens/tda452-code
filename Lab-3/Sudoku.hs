@@ -229,8 +229,26 @@ readAndSolve fp = do
                     sud <- readSudoku fp
                     printSudoku (fromJust (solve sud))
 
+-- given a sud returns a list of the positions in the sud that are not blank
+filled :: Sudoku -> [(Pos, Maybe Int)]
+filled s = concat [filledHelper (r!!idx) idx | idx <- [0..8]]
+  where r = rows s
+
+-- helper function returning positions and elements for every non blank
+filledHelper :: [Maybe Int] -> Int -> [(Pos, Maybe Int)]
+filledHelper r idx = zip (zip rs idxs) j
+  where
+    idxs  = findIndices (isJust) r
+    rs    = replicate 9 idx
+    j     = [r!!idx | idx <- idxs]
+
 isSolutionOf :: Sudoku -> Sudoku -> Bool
-isSolutionOf s uns = undefined
+isSolutionOf s uns = isOkay s && isSolved s &&
+                        (all (\ x -> (fromJust (rs!!(fst (fst x))!!(fst (snd x)))) ==
+                                (fromJust (snd x))
+                            ) (filled uns))
+  where
+    rs = rows s
 
 -------------------------------------------------------------------------
 

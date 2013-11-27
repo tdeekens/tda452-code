@@ -83,8 +83,8 @@ parseCell c | c == '.'  = Nothing
 -- generates an arbitrary sud cell
 cell :: Gen (Maybe Int)
 cell = frequency
-         [(9, return Nothing),
-          (1, do c <- choose (1,9); return (Just c))]
+         [(8, return Nothing),
+          (2, do c <- choose (1,9); return (Just c))]
 
 -- an instance for generating Arbitrary Sudokus
 instance Arbitrary Sudoku where
@@ -165,14 +165,9 @@ prop_blanks s = all (\ x -> isNothing (r !! (fst x) !! (snd x))) blanks'
 (!!=) l (idx, t) | ( (length l) - 1 ) == idx = (fst $ splitAt idx l) ++ [t]
                  | otherwise                 = (fst chopped)
                                                ++ [t]
-                                               ++ (tail' $ snd chopped)
+                                               ++ (tail $ snd chopped)
   where
     chopped = splitAt idx l
-
--- gets the tail silently without failing by returning the empty []
-tail' :: [a] -> [a]
-tail' l | null l    = l
-        | otherwise = tail l
 
 prop_replace :: Eq a => [a] -> (Int,a) -> Property
 prop_replace l (idx, t) = not (null l) ==>
@@ -207,8 +202,8 @@ nthBlock (x, y) = (x * 3) + (y + 1)
 
 -- Solves a valid sud with okay blocks
 solve :: Sudoku -> Maybe Sudoku
-solve s | not $ isSudoku s || not (all isOkayBlock blo)  = Nothing
-        | otherwise                                      = solve' s bla
+solve s | (not $ isSudoku s) || (not (all isOkayBlock blo)) = Nothing
+        | otherwise                                         = solve' s bla
   where
     blo = blocks s
     bla = blanks s
@@ -267,10 +262,11 @@ isSolutionOf s uns = isOkay s && isSolved s
 -- validates that a solution produced by solve actually is a valid solution
 prop_SolveSound :: Sudoku -> Property
 prop_SolveSound original = not (isNothing solved) ==>
-                              isSolutionOf original (fromJust solved)
+                              isSolutionOf (fromJust solved) original
   where
-    solved   = solve original
+    solved = solve original
 
+fewerChecks prop = quickCheckWith stdArgs{ maxSuccess = 11 } prop
 -------------------------------------------------------------------------
 
 -- Example Sudoku
@@ -287,3 +283,6 @@ example =
      , [Nothing,Just 8, Just 3, Nothing,Nothing,Nothing,Nothing,Just 6, Nothing]
      , [Nothing,Nothing,Just 7, Just 6, Just 9, Nothing,Nothing,Just 4, Just 3]
      ]
+
+example2 :: Sudoku
+example2 =  Sudoku [[Just 7,Just 9,Just 5,Just 4,Just 9,Just 6,Just 8,Just 8,Just 9],[Just 3,Just 9,Nothing,Just 1,Just 6,Just 5,Just 6,Just 5,Just 7],[Nothing,Just 9,Just 3,Nothing,Just 2,Just 1,Just 2,Just 3,Nothing],[Just 4,Just 7,Just 6,Just 4,Just 9,Just 6,Nothing,Just 7,Just 8],[Just 8,Just 1,Just 5,Just 8,Just 6,Just 7,Just 5,Just 3,Just 6],[Just 4,Just 1,Just 1,Just 5,Just 4,Just 9,Just 9,Nothing,Just 7],[Just 9,Just 4,Just 9,Just 3,Just 8,Nothing,Just 8,Just 9,Just 6],[Nothing,Just 5,Just 7,Nothing,Just 3,Just 3,Just 5,Just 7,Just 9],[Nothing,Just 3,Just 9,Just 5,Nothing,Just 4,Just 4,Just 5,Just 7]]

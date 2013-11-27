@@ -229,7 +229,10 @@ solveCell s p cs | null cs                  = Nothing
 readAndSolve :: FilePath -> IO ()
 readAndSolve fp = do
                     sud <- readSudoku fp
-                    printSudoku (fromJust (solve sud))
+                    let solved = solve sud
+                    if isNothing solved
+                      then error "No solution."
+                      else printSudoku (fromJust solved)
 
 -- given a sud returns a list of the positions in the sud that are not blank
 filled :: Sudoku -> [(Pos, Maybe Int)]
@@ -266,7 +269,7 @@ prop_SolveSound original = not (isNothing solved) ==>
   where
     solved = solve original
 
-fewerChecks prop = quickCheckWith stdArgs{ maxSuccess = 11 } prop
+fewerChecks prop = quickCheckWith stdArgs{ maxSuccess = 5 } prop
 -------------------------------------------------------------------------
 
 -- Example Sudoku

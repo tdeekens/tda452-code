@@ -223,6 +223,15 @@ solveCell s p cs | null cs                  = Nothing
     ps  = update s p (Just (head cs))
     pps = solve ps
 
+-- reading the Sudoku from the given file, solving it, and printing the answer
+readAndSolve :: FilePath -> IO ()
+readAndSolve fp = do
+                    sud <- readSudoku fp
+                    printSudoku (fromJust (solve sud))
+
+isSolutionOf :: Sudoku -> Sudoku -> Bool
+isSolutionOf s uns = undefined
+
 -------------------------------------------------------------------------
 
 -- Example Sudoku

@@ -29,9 +29,12 @@ data Alignment = Hertical | Horizontal
 data Field = Field { rows :: [[Cell]] }
    deriving ( Show )
 
-data Boat =
-   AircraftCarrier | Battleship | Submarine | Destroyer | PatrolBoat
-   { start :: Coord, alignment :: Alignment }
+data Model = AircraftCarrier | Battleship | Submarine | Destroyer | PatrolBoat
+   deriving ( Show, Eq )
+
+data Boat = Boat { model :: Model,
+   start :: Coord,
+   alignment :: Alignment }
    deriving (Eq, Show)
 
 data Fleet = Fleet { boats :: [Boat] }
@@ -44,6 +47,14 @@ printField f = undefined
 -- and size of the fleet
 isValidFleet :: Fleet -> Bool
 isValidFleet f = undefined
+
+-- Gives the size of a given boat
+sizeOfBoat :: Boat -> Integer
+sizeOfBoat (Boat AircraftCarrier _ _) = 5
+sizeOfBoat (Boat Battleship _ _) = 4
+sizeOfBoat (Boat Submarine _ _) = 3
+sizeOfBoat (Boat Destroyer _ _) = 3
+sizeOfBoat (Boat PatrolBoat _ _) = 2
 
 -- Gives a shiny, new and empty field ready for bombarment
 brandNewField :: Field
@@ -61,11 +72,6 @@ readField fp = undefined
 parseField :: String -> Fleet
 parseField s = undefined
 
--- Gives the size of a given boat
-sizeOfBoat :: Boat -> Int
-sizeOfBoat b = undefined
-
 -- Shoots at something on field with coordinates
 shootAtSomething :: Field -> Coord -> Fleet -> Field
 shootAtSomething field c fleet = undefined
-

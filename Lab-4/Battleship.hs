@@ -20,7 +20,7 @@ import Data.List
 
 type Cell = Maybe Bool
 
-type Coord = (Int, Char)
+type Coord = (Int, Int)
 
 data Alignment = Hertical | Horizontal
    deriving (Eq, Show)
@@ -76,12 +76,14 @@ allShipsSunken :: Field -> Bool
 allShipsSunken f = undefined
 
 -- Reads and parses a field form a file
-readField :: FilePath -> IO Fleet
+--readField :: FilePath -> IO Fleet
+readField :: FilePath -> IO Field
 readField fp = do
                   contents <- readFile fp
                   let field = parseField contents
                   if isField field
-                    then return ( parseFleet field )
+                    -- then return ( parseFleet field )
+                    then return ( field )
                     else error "File containing invalid field."
 
 -- Checks if a f is a valid representation of a Field
@@ -112,7 +114,75 @@ parseCell c | c == '_'  = Nothing
 
 -- Parses a Field into a Fleet
 parseFleet :: Field -> Fleet
-parseFleet f = undefined
+parseFleet f = Fleet (concat [parseFieldRow f idx | idx <- [0..9]])
+   where 
+      r = rows f
+
+-- parses a field row, Int - row # of the Field, Coord - starting coord of the row
+parseFieldRow :: Field -> Int -> [Boat]
+parseFieldRow f rIdx | candidate == Nothing = []
+                     | otherwise            = case (checkNext f (rIdx, fromJust(candidate))) of
+                                                True -> [snd (readHorizontally f (rIdx, fromJust(candidate)))] ++ parseFieldRow f rIdx
+                                                False -> [snd (readVertically f (rIdx, fromJust(candidate)))] ++ parseFieldRow f rIdx
+   where 
+      r         = (rows f)!!rIdx
+      candidate = findIndex (==Just True) r
+
+-- 
+readVertically :: Field -> Coord -> (Field, Boat)
+readVertically f c = undefined
+
+
+readHorizontally :: Field -> Coord -> (Field, Boat)
+readHorizontally f c = undefined{--takeWhile (not Nothing) candidate
+   where
+      rIdx = fst c
+      cIdx = snd c
+      r    = (rows f)!!rIdx
+      candidate = drop cIdx r
+      --}
+
+craftBoat :: Coord -> Alignment -> [Cell] -> Boat
+craftBoat c a s | s' == 5 = Boat AircraftCarrier c a
+                | s'==4 = Boat Battleship c a
+                | s'==3 = Boat Destroyer c a
+                | s'==2 = Boat PatrolBoat c a
+   where
+     s' = length s
+
+-- Checks if the next cell in a row taken by a ship
+checkNext :: Field -> Coord -> Bool
+checkNext f (x,10) = False
+checkNext f (x,y)  = case nextCell of
+                      Nothing   -> False
+                      Just True -> True
+   where 
+      r        = rows f
+      nextCell = r!!x!!(y+1)
+
+-- Updates a filed at a given set of coordinates
+updateField :: Field -> [Coord] -> Field
+updateField f []     = f
+updateField f (x:xs) = let newField = updateCell f x
+                           in updateField newField xs
+
+-- Updates a Field at given coordinates with a value False
+updateCell :: Field -> Coord -> Field
+updateCell f x = Field ( r !!= (rw, r!!rw !!= (cl, Just False)) )
+   where
+      r  = rows f
+      rw = fst x
+      cl = snd x
+
+-- given a list, and a tuple containing an index in the list and a new value
+-- updates the given list with the new value at the given index
+(!!=) :: [a] -> (Int,a) -> [a]
+(!!=) l (idx, t) | ( (length l) - 1 ) == idx = (fst $ splitAt idx l) ++ [t]
+                 | otherwise                 = (fst chopped)
+                                               ++ [t]
+                                               ++ (tail $ snd chopped)
+  where
+    chopped = splitAt idx l
 
 -- Shoots at something on field with coordinates
 shootAtSomething :: Field -> Coord -> Fleet -> Field

@@ -37,6 +37,7 @@ data Boat = Boat { model :: Model,
    deriving (Eq, Show)
 
 data Fleet = Fleet { boats :: [Boat] }
+   deriving ( Show )
 
 -- Prints a field
 printField :: Field -> IO ()
@@ -76,14 +77,14 @@ allShipsSunken :: Field -> Bool
 allShipsSunken f = undefined
 
 -- Reads and parses a field form a file
---readField :: FilePath -> IO Fleet
-readField :: FilePath -> IO Field
+readField :: FilePath -> IO Fleet
+--readField :: FilePath -> IO Field
 readField fp = do
                   contents <- readFile fp
                   let field = parseField contents
                   if isField field
-                    -- then return ( parseFleet field )
-                    then return ( field )
+                    then return ( parseFleet field )
+                    -- then return ( field )
                     else error "File containing invalid field."
 
 -- Checks if a f is a valid representation of a Field
@@ -121,12 +122,15 @@ parseFleet f = Fleet (concat [parseFieldRow f idx | idx <- [0..9]])
 -- parses a field row, Int - row # of the Field, Coord - starting coord of the row
 parseFieldRow :: Field -> Int -> [Boat]
 parseFieldRow f rIdx | candidate == Nothing = []
-                     | otherwise            = case (checkNext f (rIdx, fromJust(candidate))) of
-                                                True -> [snd (readHorizontally f (rIdx, fromJust(candidate)))] ++ parseFieldRow f rIdx
-                                                False -> [snd (readVertically f (rIdx, fromJust(candidate)))] ++ parseFieldRow f rIdx
+                     | otherwise            
+      = case (checkNext f (rIdx, fromJust(candidate))) of
+               True -> [snd resH] ++ parseFieldRow (fst resH) rIdx
+               False -> [snd resV] ++ parseFieldRow (fst resV) rIdx
    where 
       r         = (rows f)!!rIdx
       candidate = findIndex (==Just True) r
+      resH      = readHorizontally f (rIdx, fromJust(candidate))
+      resV      = readVertically f (rIdx, fromJust(candidate))
 
 -- 
 readVertically :: Field -> Coord -> (Field, Boat)
@@ -134,19 +138,20 @@ readVertically f c = undefined
 
 
 readHorizontally :: Field -> Coord -> (Field, Boat)
-readHorizontally f c = undefined{--takeWhile (not Nothing) candidate
+readHorizontally f c = (newField, newBoat)
    where
-      rIdx = fst c
-      cIdx = snd c
-      r    = (rows f)!!rIdx
-      candidate = drop cIdx r
-      --}
+      rIdx      = fst c
+      cIdx      = snd c
+      r         = (rows f)!!rIdx
+      candidate = takeWhile (isJust) (drop cIdx r)
+      newBoat   = craftBoat c Horizontal candidate
+      newField  = updateField f [(rIdx,cIdx + (fromIntegral i)) | i <- [0..(sizeOfBoat newBoat)] ]
 
 craftBoat :: Coord -> Alignment -> [Cell] -> Boat
 craftBoat c a s | s' == 5 = Boat AircraftCarrier c a
-                | s'==4 = Boat Battleship c a
-                | s'==3 = Boat Destroyer c a
-                | s'==2 = Boat PatrolBoat c a
+                | s' == 4 = Boat Battleship c a
+                | s' == 3 = Boat Destroyer c a
+                | s' == 2 = Boat PatrolBoat c a
    where
      s' = length s
 
@@ -187,3 +192,18 @@ updateCell f x = Field ( r !!= (rw, r!!rw !!= (cl, Just False)) )
 -- Shoots at something on field with coordinates
 shootAtSomething :: Field -> Coord -> Fleet -> Field
 shootAtSomething field c fleet = undefined
+
+example::Field
+example = 
+   Field
+     [ [Nothing, Just True, Just True, Just True, Just True, Just True, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Just True, Just True, Just True, Just True, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Just True, Just True, Just True, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Just True, Just True, Just True, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
+     , [Just True , Just True  , Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Just True   , Just True ]
+     ]

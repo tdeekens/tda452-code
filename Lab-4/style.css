@@ -19,6 +19,7 @@ body {
    border: 1px solid black;
    display: inline-block;
    height: 20px;
+   background: #EFFEC7;
 }
 
 #legend .boat-model {
@@ -73,5 +74,5 @@ table tbody td {
 }
 
 table tbody td.boat {
-   background: #B0771E;
+   background: #EFFEC7;
 }

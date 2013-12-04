@@ -87,4 +87,5 @@ table tbody td.boat {
    font-size: 25px;
    border: 0;
    background: none;
+   display: block;
 }

@@ -5,7 +5,7 @@ body {
 #wrapper {
    text-align: left;
    margin: 50px 0;
-   width: 500px;
+   width: 600px;
    margin: 50px auto;
 }
 
@@ -20,6 +20,7 @@ body {
    display: inline-block;
    height: 20px;
    background: #EFFEC7;
+   cursor: hand;
 }
 
 #legend .boat-model {
@@ -75,4 +76,15 @@ table tbody td {
 
 table tbody td.boat {
    background: #EFFEC7;
+}
+
+#controls {
+   float: right;
+   text-align: right;
+}
+
+#controls button {
+   font-size: 25px;
+   border: 0;
+   background: none;
 }

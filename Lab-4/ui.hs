@@ -1,9 +1,12 @@
 import Haste
+import Battleship
 
 main :: IO ()
-main = do
-    Just inp  <- elemById "0-1"
-    Just outp <- elemById "0-1"
-    onEvent inp OnClick $ \_ -> do
-        setProp outp "innerHTML" "boom"
-    return ()
+main = undefined
+
+getShipModel :: String -> Model
+getShipModel "aircraftcarrier" = AircraftCarrier
+getShipModel "battleship"      = Battleship
+getShipModel "submarine"       = Submarine
+getShipModel "destroyer"       = Submarine
+getShipModel "patrolboat"      = PatrolBoat

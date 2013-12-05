@@ -7,22 +7,6 @@ import Data.List
 {-
    Lab Assignment 4
    Anna Averianova & Tobias Deekens, 2013
-
-   - Datatype field = Maybe Bool
-      - Datatype board containing a [[Field]]
-   - Datatype boat = AircraftCarrier | Battleship | Submarine |
-                     Destroyer | PatrolBoat
-      - Every boat knowing its horizontal/vertical alignment
-      - and its position on the board
--}
-
-{-
-Haste
-UI
-parsing library for reading
-play against a computer
-computer is not stupid
-testing
 -}
 
 -------------------------------------------------------------------------
@@ -58,6 +42,40 @@ data Boat = Boat { model :: Model,
 -- A list of boats that are used in one game
 data Fleet = Fleet { boats :: [Boat] }
    deriving ( Show )
+
+-- Generates random model
+rModel :: Gen Model
+rModel = frequency
+      [(1, return AircraftCarrier),
+       (1, return Battleship),
+       (1, return Submarine),
+       (1, return Destroyer),
+       (2, return PatrolBoat)]
+
+instance Arbitrary Model where
+  arbitrary = rModel
+
+-- Generates random alignment
+rAlignment :: Gen Alignment
+rAlignment = elements [Vertical, Horizontal]
+
+instance Arbitrary Alignment where
+  arbitrary = rAlignment
+
+-- Generates random field coordinates
+rCoord :: Gen (Int, Int)
+rCoord = do
+  x <- choose (0,9)
+  y <- choose (0,9)
+  return (x,y)
+
+-- Generates a random boat
+rBoat :: Gen Boat
+rBoat = do
+  m <- rModel
+  c <- rCoord
+  a <- rAlignment
+  return (Boat m c a)
 
 -- A constant defining the size of a complete fleet
 -- (sum of the sizes of all boats in a complete field)
@@ -230,11 +248,11 @@ printCell Nothing   = "_"
 printCell (Just True)  = "x"
 printCell (Just False)  = "."
 
+
+
 {-
     Reading parsing etc 
 -}
-
-
 
 -- Reads and parses a field form a file
 readField :: FilePath -> IO Fleet

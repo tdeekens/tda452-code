@@ -1,6 +1,17 @@
-window.battleship = {};
+var js_jquery = $;
 
-battleship.config = {
+function js_click(obj, callback) {
+   obj.click(function(evt) {
+      A(
+         callback,
+         [
+            [0, "#" + $(this).attr('id')]
+         , 0]
+      );
+   });
+}
+
+config = {
    log: true,
    delimiter: "-",
    start: [0, 0],
@@ -14,54 +25,54 @@ battleship.config = {
    }
 }
 
-battleship.state = {
+state = {
    booked: [],
    boatmodel: undefined,
    start: undefined,
    alignment: undefined
 };
 
-battleship.selectBoat = function() {
+selectBoat = function() {
    if (!true) { //tobe validation in haskell
       return false;
    }
 
-   var $this     = $(this);
+   var $this     = $(arguments[0]);
    var boatmodel = $this.data('model');
 
-   battleship.state.boatmodel = boatmodel;
-   battleship.state.start     = battleship.config.start;
-   battleship.state.alignment = battleship.config.alignment;
+   state.boatmodel = boatmodel;
+   state.start     = config.start;
+   state.alignment = config.alignment;
 
-   console.log('State changed:', battleship.state);
+   console.log('State changed:', state);
 };
 
-battleship.addBoat = function() {
-   if (battleship.state.boatmodel === undefined) {
+addBoat = function() {
+   if (state.boatmodel === undefined) {
       alert("Please select a boat to position!");
       return false;
    }
 
-   battleship.markHorizontal(false);
+   markHorizontal(false);
 
-   var $this    = $(this)
+   var $this      = $(arguments[0])
        , id       = $this.attr('id')
-       , position = id.split(battleship.config.delimiter);
+       , position = id.split(config.delimiter);
 
-   battleship.state.start = [position[0]--, position[1]--];
+   state.start = [position[0]--, position[1]--];
 
-   battleship.markHorizontal(true);
+   markHorizontal(true);
 
-   console.log('State changed:', battleship.state);
+   console.log('State changed:', state);
 }
 
-battleship.markHorizontal = function(book) {
-   var boatmodel = battleship.state.boatmodel;
+markHorizontal = function(book) {
+   var boatmodel = state.boatmodel;
 
-   var row  = battleship.state.start[0] + 1
-       , cell = battleship.state.start[1] + 1;
+   var row  = state.start[0] + 1
+       , cell = state.start[1] + 1;
 
-   var length = cell + battleship.config.sizes[boatmodel];
+   var length = cell + config.sizes[boatmodel];
    var $cells = $( $('tr').get( row ) ).find('td');
 
    $cells = $cells.slice(cell, length);
@@ -75,13 +86,13 @@ battleship.markHorizontal = function(book) {
    }
 }
 
-battleship.markVertically = function(book) {
-   var boatmodel = battleship.state.boatmodel;
+markVertically = function(book) {
+   var boatmodel = state.boatmodel;
 
    var $rows     = $('tr')
-       , column = battleship.state.start[0] + 1;
+       , column = state.start[0] + 1;
 
-   var length = column + battleship.config.sizes[boatmodel];
+   var length = column + config.sizes[boatmodel];
 
    $rows = $rows.slice(column, length);
    if (book === true) {
@@ -101,32 +112,32 @@ battleship.markVertically = function(book) {
    }
 }
 
-battleship.flipBoat = function() {
-   if(battleship.state.alignment === 'horizontal') {
-      battleship.state.alignment = 'vertical';
-      battleship.markHorizontal(false);
-      battleship.markVertically(true);
+flipBoat = function() {
+   if(state.alignment === 'horizontal') {
+      state.alignment = 'vertical';
+      markHorizontal(false);
+      markVertically(true);
    } else {
-      battleship.state.alignment = 'horizontal';
-      battleship.markVertically(false);
-      battleship.markHorizontal(true);
+      state.alignment = 'horizontal';
+      markVertically(false);
+      markHorizontal(true);
    }
 
-   console.log('State changed:', battleship.state);
+   console.log('State changed:', state);
 };
 
-battleship.lockBoat = function() {
+lockBoat = function() {
    if (!true) { // ask haskell here
       alert("Duplicate boat or invalid position!");
       return false;
    } else {
-      battleship.state.boatmodel = undefined;
-      battleship.state.start     = undefined;
-      battleship.state.alignment = undefined;
+      state.boatmodel = undefined;
+      state.start     = undefined;
+      state.alignment = undefined;
    }
 };
 
-battleship.startGame = function() {
+startGame = function() {
    if (!true) { // ask haskell here
       alert("Game can't be started, please positions your boats!");
       return false;
@@ -138,39 +149,29 @@ battleship.startGame = function() {
       $('#legend').css('visibility', 'hidden');
       $('table').addClass('game-mode');
 
-      $tds.on('click', battleship.shoot);
+      $tds.on('click', shoot);
    }
 };
 
-battleship.shoot = function() {
+shoot = function() {
    if (!true) { // not hit: ask haskell here
       return false;
    } else {
-      var $this = $(this);
+      var $this = $(arguments[0]);
 
       $this.text('☠');
    }
 };
 
-battleship.reset = function() {
-   battleship.state.boatmodel = undefined;
-   battleship.state.start     = undefined;
-   battleship.state.alignment = undefined;
+reset = function() {
+   state.boatmodel = undefined;
+   state.start     = undefined;
+   state.alignment = undefined;
 
    var $tds = $('tbody td:not(.shead)');
    $tds.removeClass();
    $tds.text('');
    $tds.off();
-   $tds.on('click', battleship.addBoat);
+   $tds.on('click', addBoat);
    $('#legend').css('visibility', 'visible');
 };
-
-$(function() {
-   $('.boat').on('click', battleship.selectBoat);
-   $('button#flip').on('click', battleship.flipBoat);
-   $('button#lock').on('click', battleship.lockBoat);
-   $('button#start').on('click', battleship.startGame);
-   $('button#reset').on('click', battleship.reset);
-
-   $('tbody td:not(.shead)').on('click', battleship.addBoat);
-});

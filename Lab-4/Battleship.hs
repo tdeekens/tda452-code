@@ -10,13 +10,10 @@ import DataTypes
    Anna Averianova & Tobias Deekens, 2013
 -}
 
--- Returns the size of a given boat
-sizeOfBoat :: Boat -> Integer
-sizeOfBoat (Boat AircraftCarrier _ _) = 5
-sizeOfBoat (Boat Battleship _ _) = 4
-sizeOfBoat (Boat Submarine _ _) = 3
-sizeOfBoat (Boat Destroyer _ _) = 3
-sizeOfBoat (Boat PatrolBoat _ _) = 2
+-- is the fleet complete
+-- AI for computer
+-- Generate fleet
+
 
 -- Returns the size of a given boat model
 sizeOfModel :: Model -> Integer
@@ -97,7 +94,13 @@ fleetCoord (Fleet (x:xs)) = (boatCoord x) ++ (fleetCoord (Fleet xs))
 -- Checks for non-overlapping boats, space between boats
 -- and size of the fleet
 isValidFleet :: Fleet -> Bool
-isValidFleet f = undefined
+isValidFleet f = (size == sizeOfFleet) && noIntersect
+  where
+    bs          = boats f
+    size        = length bs
+    boatsCoord  = concat [ boatCoord b| b <- bs]
+    noIntersect = (nub boatsCoord) == boatsCoord
+
 
 -- Updates a field at a given set of coordinates with
 -- the provided value
@@ -125,10 +128,10 @@ updateCell f x b = Field ( r !!= (rw, r!!rw !!= (cl, b)) )
     chopped = splitAt idx l
 
 -- Shoots at a position on a field with provided coordinates
-shootAtCoordinate :: Field -> Coord -> Fleet -> Field
+shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Bool)
 shootAtCoordinate field c fleet 
-    | c `elem` (fleetCoord fleet) = updateField field [c] (Just True)
-    | otherwise                   = updateField field [c] (Just False)
+    | c `elem` (fleetCoord fleet) = (updateField field [c] (Just True),True)
+    | otherwise                   = (updateField field [c] (Just False),False)
   where
     cell = (rows field)!!rIdx!!cIdx
     rIdx = fst c

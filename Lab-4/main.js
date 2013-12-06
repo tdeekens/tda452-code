@@ -131,12 +131,12 @@ battleship.startGame = function() {
       alert("Game can't be started, please positions your boats!");
       return false;
    } else {
-      var $tds = $('table td');
+      var $tds = $('tbody td:not(.shead)');
       $tds.off();
       $tds.removeClass('boat');
 
       $('#legend').css('visibility', 'hidden');
-      $('table').removeClass('position-mode').addClass('game-mode');
+      $('table').addClass('game-mode');
 
       $tds.on('click', battleship.shoot);
    }
@@ -152,12 +152,25 @@ battleship.shoot = function() {
    }
 };
 
+battleship.reset = function() {
+   battleship.state.boatmodel = undefined;
+   battleship.state.start     = undefined;
+   battleship.state.alignment = undefined;
+
+   var $tds = $('tbody td:not(.shead)');
+   $tds.removeClass();
+   $tds.text('');
+   $tds.off();
+   $tds.on('click', battleship.addBoat);
+   $('#legend').css('visibility', 'visible');
+};
+
 $(function() {
    $('.boat').on('click', battleship.selectBoat);
    $('button#flip').on('click', battleship.flipBoat);
    $('button#lock').on('click', battleship.lockBoat);
    $('button#start').on('click', battleship.startGame);
+   $('button#reset').on('click', battleship.reset);
 
-   $('table.position-mode td').on('click', battleship.addBoat);
-   $('table.game-mode td').on('click', battleship.shoot);
+   $('tbody td:not(.shead)').on('click', battleship.addBoat);
 });

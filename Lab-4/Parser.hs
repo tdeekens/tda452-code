@@ -106,4 +106,4 @@ readHorizontally f c = (newField, newBoat)
       r         = (rows f)!!rIdx
       candidate = takeWhile (isJust) (drop cIdx r)
       newBoat   = craftBoat c Horizontal candidate
-      newField  = updateField f [(rIdx,cIdx + (fromIntegral i)) | i <- [0..((sizeOfBoat newBoat) -1)] ] (Just False)
+      newField  = updateField f [(rIdx,cIdx + (fromIntegral i)) | i <- [0..((sizeOfModel (model newBoat)) -1)] ] (Just False)

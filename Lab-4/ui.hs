@@ -8,7 +8,7 @@ newtype JQuery = JQuery JSAny
 foreign import ccall js_jquery :: JSString -> IO (JQuery)
 
 -- Click callback from JS
-foreign import ccall js_click :: JQuery -> JSFun (String -> IO ()) -> IO ()
+foreign import ccall js_click :: JQuery -> JSFun (JSString -> IO ()) -> IO ()
 
 -- All the functions which can be ran from Haskell
 foreign import ccall selectBoat :: JSString -> IO ()
@@ -23,7 +23,7 @@ j :: String -> (JQuery -> IO ()) -> IO ()
 j s action = js_jquery (toJSString s) >>= action
 
 -- Register an onclick callback evaluating the .
-click :: (String -> IO ()) -> JQuery -> IO ()
+click :: (JSString -> IO ()) -> JQuery -> IO ()
 click f jq = js_click jq (mkCallback f)
 
 -- Lets get down to binding to JS functions
@@ -31,22 +31,22 @@ click f jq = js_click jq (mkCallback f)
 main = do
   j ".boat" $
     click (\idx
-              -> when (True) (selectBoat (toJSString idx)))
+              -> when (True) (selectBoat idx))
   j "button#flip" $
       click (\idx
-              -> when (True) (flipBoat (toJSString idx)))
+              -> when (True) (flipBoat idx))
   j "button#lock" $
     click (\idx
-              -> when (True) (lockBoat (toJSString idx)))
+              -> when (True) (lockBoat idx))
   j "button#start" $
     click (\idx
-              -> when (True) (startGame (toJSString idx)))
+              -> when (True) (startGame idx))
   j "button#reset" $
     click (\idx
-              -> when (True) (resetGame (toJSString idx)))
+              -> when (True) (resetGame idx))
   j ".boat" $
     click (\idx
-              -> when (True) (selectBoat (toJSString idx)))
+              -> when (True) (selectBoat idx))
   j "tbody td:not(.shead)" $
     click (\idx
-              -> when (True) (addBoat (toJSString idx)))
+              -> when (True) (addBoat idx))

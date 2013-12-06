@@ -5,7 +5,7 @@ function js_click(obj, callback) {
       A(
          callback,
          [
-            [0, "hi"]
+            [0, "#" + $(this).attr('id')]
          , 0]
       );
    });
@@ -37,8 +37,8 @@ selectBoat = function(idx) {
       return false;
    }
 
-   var $this     = $(arguments[0]);
-   var boatmodel = $this.data('model');
+   var $this     = $(idx);
+   var boatmodel = $this.attr('id');
 
    state.boatmodel = boatmodel;
    state.start     = config.start;
@@ -47,7 +47,7 @@ selectBoat = function(idx) {
    console.log('State changed:', state);
 };
 
-addBoat = function() {
+addBoat = function(idx) {
    if (state.boatmodel === undefined) {
       alert("Please select a boat to position!");
       return false;
@@ -55,7 +55,7 @@ addBoat = function() {
 
    markHorizontal(false);
 
-   var $this      = $(arguments[0])
+   var $this      = $(idx)
        , id       = $this.attr('id')
        , position = id.split(config.delimiter);
 
@@ -153,11 +153,11 @@ startGame = function() {
    }
 };
 
-shoot = function() {
+shoot = function(idx) {
    if (!true) { // not hit: ask haskell here
       return false;
    } else {
-      var $this = $(arguments[0]);
+      var $this = $(idx);
 
       $this.text('☠');
    }
@@ -1743,5 +1743,5 @@ function jsMkStdin() {
     );
 }
 
-var _0=0,_1=function(_2,_){addBoat(toJSStr(E(_2)));return _0;},_3=[0,_1],_4=unCStr("tbody td:not(.shead)"),_5=function(_6,_){flipBoat(toJSStr(E(_6)));return _0;},_7=[0,_5],_8=unCStr("button#flip"),_9=function(_a,_){selectBoat(toJSStr(E(_a)));return _0;},_b=[0,_9],_c=[0,_9],_d=unCStr(".boat"),_e=function(_f,_){resetGame(toJSStr(E(_f)));return _0;},_g=[0,_e],_h=unCStr("button#reset"),_i=function(_j,_){startGame(toJSStr(E(_j)));return _0;},_k=[0,_i],_l=unCStr("button#start"),_m=function(_n,_){lockBoat(toJSStr(E(_n)));return _0;},_o=[0,_m],_p=unCStr("button#lock"),_q=function(_){var _r=E(_d),_s=js_jquery(toJSStr(_r));js_click(_s,E(_b)[1]);var _t=js_jquery(toJSStr(E(_8)));js_click(_t,E(_7)[1]);var _u=js_jquery(toJSStr(E(_p)));js_click(_u,E(_o)[1]);var _v=js_jquery(toJSStr(E(_l)));js_click(_v,E(_k)[1]);var _w=js_jquery(toJSStr(E(_h)));js_click(_w,E(_g)[1]);var _x=js_jquery(toJSStr(_r));js_click(_x,E(_c)[1]);var _y=js_jquery(toJSStr(E(_4)));js_click(_y,E(_3)[1]);return _0;},_z=function(_){return _q(_);};
-var hasteMain = function() {A(_z, [0]);};window.onload = hasteMain;
+var _0=0,_1=function(_2,_){addBoat(E(_2)[1]);return _0;},_3=function(_4,_){return _1(_4,_);},_5=[0,_3],_6=unCStr("tbody td:not(.shead)"),_7=function(_8,_){flipBoat(E(_8)[1]);return _0;},_9=function(_4,_){return _7(_4,_);},_a=[0,_9],_b=unCStr("button#flip"),_c=function(_d,_){selectBoat(E(_d)[1]);return _0;},_e=function(_4,_){return _c(_4,_);},_f=[0,_e],_g=unCStr(".boat"),_h=function(_i,_){resetGame(E(_i)[1]);return _0;},_j=function(_4,_){return _h(_4,_);},_k=[0,_j],_l=unCStr("button#reset"),_m=function(_n,_){startGame(E(_n)[1]);return _0;},_o=function(_4,_){return _m(_4,_);},_p=[0,_o],_q=unCStr("button#start"),_r=function(_s,_){lockBoat(E(_s)[1]);return _0;},_t=function(_4,_){return _r(_4,_);},_u=[0,_t],_v=unCStr("button#lock"),_w=function(_){var _x=E(_g),_y=js_jquery(toJSStr(_x)),_z=E(_f)[1];js_click(_y,_z);var _A=js_jquery(toJSStr(E(_b)));js_click(_A,E(_a)[1]);var _B=js_jquery(toJSStr(E(_v)));js_click(_B,E(_u)[1]);var _C=js_jquery(toJSStr(E(_q)));js_click(_C,E(_p)[1]);var _D=js_jquery(toJSStr(E(_l)));js_click(_D,E(_k)[1]);var _E=js_jquery(toJSStr(_x));js_click(_E,_z);var _F=js_jquery(toJSStr(E(_6)));js_click(_F,E(_5)[1]);return _0;},_G=function(_){return _w(_);};
+var hasteMain = function() {A(_G, [0]);};window.onload = hasteMain;

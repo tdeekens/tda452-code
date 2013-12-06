@@ -5,7 +5,7 @@ function js_click(obj, callback) {
       A(
          callback,
          [
-            [0, "hi"]
+            [0, "#" + $(this).attr('id')]
          , 0]
       );
    });
@@ -37,8 +37,8 @@ selectBoat = function(idx) {
       return false;
    }
 
-   var $this     = $(arguments[0]);
-   var boatmodel = $this.data('model');
+   var $this     = $(idx);
+   var boatmodel = $this.attr('id');
 
    state.boatmodel = boatmodel;
    state.start     = config.start;
@@ -47,7 +47,7 @@ selectBoat = function(idx) {
    console.log('State changed:', state);
 };
 
-addBoat = function() {
+addBoat = function(idx) {
    if (state.boatmodel === undefined) {
       alert("Please select a boat to position!");
       return false;
@@ -55,7 +55,7 @@ addBoat = function() {
 
    markHorizontal(false);
 
-   var $this      = $(arguments[0])
+   var $this      = $(idx)
        , id       = $this.attr('id')
        , position = id.split(config.delimiter);
 
@@ -153,11 +153,11 @@ startGame = function() {
    }
 };
 
-shoot = function() {
+shoot = function(idx) {
    if (!true) { // not hit: ask haskell here
       return false;
    } else {
-      var $this = $(arguments[0]);
+      var $this = $(idx);
 
       $this.text('☠');
    }

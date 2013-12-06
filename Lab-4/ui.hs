@@ -11,12 +11,12 @@ foreign import ccall js_jquery :: JSString -> IO (JQuery)
 foreign import ccall js_click :: JQuery -> JSFun (String -> IO ()) -> IO ()
 
 -- All the functions which can be ran from Haskell
-foreign import ccall selectBoat :: JQuery -> IO ()
-foreign import ccall flipBoat :: JQuery -> IO ()
-foreign import ccall lockBoat :: JQuery -> IO ()
-foreign import ccall startGame :: JQuery -> IO ()
-foreign import ccall resetGame :: JQuery -> IO ()
-foreign import ccall addBoat :: JQuery -> IO ()
+foreign import ccall selectBoat :: JSString -> IO ()
+foreign import ccall flipBoat :: JSString -> IO ()
+foreign import ccall lockBoat :: JSString -> IO ()
+foreign import ccall startGame :: JSString -> IO ()
+foreign import ccall resetGame :: JSString -> IO ()
+foreign import ccall addBoat :: JSString -> IO ()
 
 -- Define jQuery as j and a function binding an action onto it on the JS side
 j :: String -> (JQuery -> IO ()) -> IO ()
@@ -31,22 +31,22 @@ click f jq = js_click jq (mkCallback f)
 main = do
   j ".boat" $
     click (\idx
-              -> when (True) (j idx $ selectBoat))
+              -> when (True) (selectBoat (toJSString idx)))
   j "button#flip" $
       click (\idx
-                -> when (True) (j idx $ flipBoat))
+              -> when (True) (flipBoat (toJSString idx)))
   j "button#lock" $
     click (\idx
-              -> when (True) (j idx $ lockBoat))
+              -> when (True) (lockBoat (toJSString idx)))
   j "button#start" $
     click (\idx
-              -> when (True) (j idx $ startGame))
+              -> when (True) (startGame (toJSString idx)))
   j "button#reset" $
     click (\idx
-              -> when (True) (j idx $ resetGame))
+              -> when (True) (resetGame (toJSString idx)))
   j ".boat" $
     click (\idx
-              -> when (True) (j idx $ selectBoat))
+              -> when (True) (selectBoat (toJSString idx)))
   j "tbody td:not(.shead)" $
     click (\idx
-              -> when (True) (j idx $ addBoat))
+              -> when (True) (addBoat (toJSString idx)))

@@ -5,7 +5,7 @@ function js_click(obj, callback) {
       A(
          callback,
          [
-            [0, "#" + $(this).attr('id')]
+            [0, "hi"]
          , 0]
       );
    });
@@ -32,7 +32,7 @@ state = {
    alignment: undefined
 };
 
-selectBoat = function() {
+selectBoat = function(idx) {
    if (!true) { //tobe validation in haskell
       return false;
    }

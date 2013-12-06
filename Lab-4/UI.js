@@ -5,7 +5,7 @@ function js_click(obj, callback) {
       A(
          callback,
          [
-            [0, "#" + $(this).attr('id')]
+            [0, "hi"]
          , 0]
       );
    });
@@ -32,7 +32,7 @@ state = {
    alignment: undefined
 };
 
-selectBoat = function() {
+selectBoat = function(idx) {
    if (!true) { //tobe validation in haskell
       return false;
    }
@@ -1743,5 +1743,5 @@ function jsMkStdin() {
     );
 }
 
-var _0=0,_1=function(_2,_){var _3=js_jquery(toJSStr(E(_2)));addBoat(_3);return _0;},_4=[0,_1],_5=function(_6,_){var _7=js_jquery(toJSStr(E(_6)));startGame(_7);return _0;},_8=[0,_5],_9=unCStr("button#start"),_a=function(_b,_){var _c=js_jquery(toJSStr(E(_b)));lockBoat(_c);return _0;},_d=[0,_a],_e=unCStr("button#lock"),_f=function(_g,_){var _h=js_jquery(toJSStr(E(_g)));flipBoat(_h);return _0;},_i=[0,_f],_j=unCStr("button#flip"),_k=function(_l,_){var _m=js_jquery(toJSStr(E(_l)));selectBoat(_m);return _0;},_n=[0,_k],_o=unCStr("tbody td:not(.shead)"),_p=[0,_k],_q=unCStr(".boat"),_r=function(_s,_){var _t=js_jquery(toJSStr(E(_s)));resetGame(_t);return _0;},_u=[0,_r],_v=unCStr("button#reset"),_w=function(_){var _x=E(_q),_y=js_jquery(toJSStr(_x));js_click(_y,E(_n)[1]);var _z=js_jquery(toJSStr(E(_j)));js_click(_z,E(_i)[1]);var _A=js_jquery(toJSStr(E(_e)));js_click(_A,E(_d)[1]);var _B=js_jquery(toJSStr(E(_9)));js_click(_B,E(_8)[1]);var _C=js_jquery(toJSStr(E(_v)));js_click(_C,E(_u)[1]);var _D=js_jquery(toJSStr(_x));js_click(_D,E(_p)[1]);var _E=js_jquery(toJSStr(E(_o)));js_click(_E,E(_4)[1]);return _0;},_F=function(_){return _w(_);};
-var hasteMain = function() {A(_F, [0]);};window.onload = hasteMain;
+var _0=0,_1=function(_2,_){addBoat(toJSStr(E(_2)));return _0;},_3=[0,_1],_4=unCStr("tbody td:not(.shead)"),_5=function(_6,_){flipBoat(toJSStr(E(_6)));return _0;},_7=[0,_5],_8=unCStr("button#flip"),_9=function(_a,_){selectBoat(toJSStr(E(_a)));return _0;},_b=[0,_9],_c=[0,_9],_d=unCStr(".boat"),_e=function(_f,_){resetGame(toJSStr(E(_f)));return _0;},_g=[0,_e],_h=unCStr("button#reset"),_i=function(_j,_){startGame(toJSStr(E(_j)));return _0;},_k=[0,_i],_l=unCStr("button#start"),_m=function(_n,_){lockBoat(toJSStr(E(_n)));return _0;},_o=[0,_m],_p=unCStr("button#lock"),_q=function(_){var _r=E(_d),_s=js_jquery(toJSStr(_r));js_click(_s,E(_b)[1]);var _t=js_jquery(toJSStr(E(_8)));js_click(_t,E(_7)[1]);var _u=js_jquery(toJSStr(E(_p)));js_click(_u,E(_o)[1]);var _v=js_jquery(toJSStr(E(_l)));js_click(_v,E(_k)[1]);var _w=js_jquery(toJSStr(E(_h)));js_click(_w,E(_g)[1]);var _x=js_jquery(toJSStr(_r));js_click(_x,E(_c)[1]);var _y=js_jquery(toJSStr(E(_4)));js_click(_y,E(_3)[1]);return _0;},_z=function(_){return _q(_);};
+var hasteMain = function() {A(_z, [0]);};window.onload = hasteMain;

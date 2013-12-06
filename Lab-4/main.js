@@ -126,9 +126,38 @@ battleship.lockBoat = function() {
    }
 };
 
+battleship.startGame = function() {
+   if (!true) { // ask haskell here
+      alert("Game can't be started, please positions your boats!");
+      return false;
+   } else {
+      var $tds = $('table td');
+      $tds.off();
+      $tds.removeClass('boat');
+
+      $('#legend').css('visibility', 'hidden');
+      $('table').removeClass('position-mode').addClass('game-mode');
+
+      $tds.on('click', battleship.shoot);
+   }
+};
+
+battleship.shoot = function() {
+   if (!true) { // not hit: ask haskell here
+      return false;
+   } else {
+      var $this = $(this);
+
+      $this.text('☠');
+   }
+};
+
 $(function() {
    $('.boat').on('click', battleship.selectBoat);
-   $('td').on('click', battleship.addBoat);
    $('button#flip').on('click', battleship.flipBoat);
    $('button#lock').on('click', battleship.lockBoat);
+   $('button#start').on('click', battleship.startGame);
+
+   $('table.position-mode td').on('click', battleship.addBoat);
+   $('table.game-mode td').on('click', battleship.shoot);
 });

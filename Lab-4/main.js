@@ -126,9 +126,51 @@ battleship.lockBoat = function() {
    }
 };
 
+battleship.startGame = function() {
+   if (!true) { // ask haskell here
+      alert("Game can't be started, please positions your boats!");
+      return false;
+   } else {
+      var $tds = $('tbody td:not(.shead)');
+      $tds.off();
+      $tds.removeClass('boat');
+
+      $('#legend').css('visibility', 'hidden');
+      $('table').addClass('game-mode');
+
+      $tds.on('click', battleship.shoot);
+   }
+};
+
+battleship.shoot = function() {
+   if (!true) { // not hit: ask haskell here
+      return false;
+   } else {
+      var $this = $(this);
+
+      $this.text('☠');
+   }
+};
+
+battleship.reset = function() {
+   battleship.state.boatmodel = undefined;
+   battleship.state.start     = undefined;
+   battleship.state.alignment = undefined;
+
+   var $tds = $('tbody td:not(.shead)');
+   $tds.removeClass();
+   $tds.text('');
+   $tds.off();
+   $tds.on('click', battleship.addBoat);
+   $('#legend').css('visibility', 'visible');
+};
+
 $(function() {
    $('.boat').on('click', battleship.selectBoat);
-   $('td').on('click', battleship.addBoat);
    $('button#flip').on('click', battleship.flipBoat);
    $('button#lock').on('click', battleship.lockBoat);
+   $('button#start').on('click', battleship.startGame);
+   $('button#reset').on('click', battleship.reset);
+
+   $('tbody td:not(.shead)').on('click', battleship.addBoat);
 });

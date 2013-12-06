@@ -1,5 +1,6 @@
 body {
    text-align: center;
+   font-family: Tahoma;
 }
 
 #wrapper {
@@ -64,6 +65,7 @@ table tbody td {
    border: 1px solid black;
    width: 25px;
    height: 25px;
+   text-align: center;
 }
 
 table td {

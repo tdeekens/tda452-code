@@ -72,6 +72,24 @@ rBoat = do
   a <- rAlignment
   return (Boat m c a)
 
+instance Arbitrary Boat where
+	arbitrary = rBoat
+
+-- Generates a fleet
+
+rFleet :: Gen Fleet
+rFleet = do
+  b1 <- rBoat
+  b2 <- rBoat
+  b3 <- rBoat
+  b4 <- rBoat
+  b5 <- rBoat
+  b6 <- rBoat
+  return (Fleet [b1,b2,b3,b4,b5])
+
+instance Arbitrary Fleet where
+	arbitrary = rFleet
+
 -- A constant defining the size of a complete fleet
 -- (sum of the sizes of all boats in a complete field)
 sizeOfFleet = 19 ::Int

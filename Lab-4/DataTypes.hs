@@ -38,8 +38,16 @@ data Fleet = Fleet { boats :: [Boat] }
    deriving ( Show )
 
 -- Directions for shooting
-data Direction =  North | South | Left | Right
-   deriving (Eq, Show)
+data Direction =  North | South | West | East
+   deriving (Enum, Eq, Show)
+
+{-
+data Player = Player {
+	field :: Field,
+	fleet :: Fleet,
+	shots :: [(Coord)]
+}
+	deriving (Show) -}
 
 -- A constant defining the size of a complete fleet
 -- (sum of the sizes of all boats in a complete field)

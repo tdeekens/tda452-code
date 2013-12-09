@@ -60,7 +60,10 @@ boatCoord (Boat m (x,y) Vertical) =
 
 -- Checks if coordinates of a boat do not go out the field borders
 areBoatCoordOkay :: Boat -> Bool
-areBoatCoordOkay (Boat m (x,y) a) = (x `elem` [0..9]) && (y `elem` [0..9])
+areBoatCoordOkay b = and [(x `elem` [0..9]) && (y `elem` [0..9])
+                            | (x,y) <- bc]
+  where
+    bc = boatCoord b
 
 -- Checks if the boat can be added to the fleet
 -- Returns true when a new boat does not overlap with the boats in the fleet
@@ -193,6 +196,29 @@ shuffleShots g s  = item : shuffleShots g' rest
     (pos, g') = randomR (0, length s - 1) g
     item      = s!!pos
     rest      = delete item s
+
+
+
+{-
+-- Takes a current number of shots, a field, a fleet and a coord where
+-- the ship has been hit at
+sinkShip :: Field -> Fleet -> [Coord] -> (Field, Int)
+sinkShip fd ft ((x,y):cs) = walkSide dirs fd ft (x-1,y)
+  where
+    dirs = [North, South, West, East]
+
+
+walkSide :: [Direction] -> Field -> Fleet -> Coord -> (Field, Int, [(Coord)])
+walkSide (North:ds) fd ft c | res == Nothing = undefined -- try with next dirs
+   where
+    dirs = [South, West, East]
+    res  = shootAtCoordinate fd c ft
+
+target :: Direction -> Coord -> Coord
+target North (x,y) = (x-1,y)
+target South (x,y) = (x+1,y)
+target East  (x,y) = (x,y+1)
+target West  (x,y) = (x,y-1)-}
 -------------------------------------------------------------------------
 -- AI
 {-
@@ -203,6 +229,11 @@ newFleet =
       then return nf
      else return newFleet-}
 
+
+-------------------------------------------------------------------------
+-- Constructs user's fleet
+constructFleet :: Fleet -> Boat -> Fleet
+constructFleet (Fleet []) b = undefined
 
 -------------------------------------------------------------------------
 -- Example Field
@@ -259,7 +290,12 @@ implementation = Interface {
    , iPrintField = printField
    , iShuffleShots = shuffleShots
    , iFullShots = fullShots
+   , iAddToFleet = addToFleet
+   , iIsValidFleet = isValidFleet
 }
 
 main :: IO ()
 main = runGame implementation
+
+position :: IO ()
+position = positionFleet implementation

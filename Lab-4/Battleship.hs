@@ -1,6 +1,5 @@
 module Battleship where
 
-import Test.QuickCheck
 import Data.Maybe
 import Data.List
 import System.Random

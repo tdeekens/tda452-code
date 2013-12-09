@@ -1,16 +1,24 @@
+// jQuery can't be dollar bills in Haskell, this is its export
 var js_jquery = $;
 
+// Imported within Haskell's UI.hs to bind a click handler with callback
 function js_click(obj, callback) {
    obj.click(function(evt) {
       A(
          callback,
          [
+            // ... callbacks get the DOM Node's id to identify them
             [0, "#" + $(this).attr('id')]
          , 0]
       );
    });
 }
 
+function js_unbind(obj) {
+   obj.off();
+}
+
+// Config values used as defaults
 config = {
    log: true,
    delimiter: "-",
@@ -25,12 +33,16 @@ config = {
    }
 }
 
+// State is maintained within the object, always contains
+// last selected boat also fetched by Haskell as String
 state = {
    boatmodel: undefined,
    start: undefined,
    alignment: undefined
 };
 
+// Selects a boat from the legend (without coloring anything)
+// just changes state within JS
 selectBoat = function(idx) {
    var $this     = $(idx);
    var boatmodel = $this.attr('id');
@@ -42,10 +54,12 @@ selectBoat = function(idx) {
    console.log('State changed:', state);
 };
 
+// Bound by Haskell to get the current UI's state as String
 getState = function() {
    return state.boatmodel + "|" + state.start.join("-") + "|" + state.alignment;
 }
 
+// Adds a boat to the field by coloring cells, also sets state's start
 addBoat = function(idx) {
    if (state.boatmodel === undefined) {
       alert("Please select a boat to position!");
@@ -60,11 +74,12 @@ addBoat = function(idx) {
 
    state.start = [position[0]--, position[1]--];
 
-   //markHorizontal(true);
+   markHorizontal(true);
 
    console.log('State changed:', state);
 }
 
+// Colors/uncolors cells horitzonally based on the book flag
 markHorizontal = function(book) {
    var boatmodel = state.boatmodel;
 
@@ -85,6 +100,7 @@ markHorizontal = function(book) {
    }
 }
 
+// Colors/uncolors cells vertically based on the book flag
 markVertically = function(book) {
    var boatmodel = state.boatmodel;
 
@@ -112,6 +128,7 @@ markVertically = function(book) {
    }
 }
 
+// Flips a boat's alignment and colors cells accordingly
 flipBoat = function() {
    if(state.alignment === 'horizontal') {
       state.alignment = 'vertical';
@@ -126,39 +143,31 @@ flipBoat = function() {
    console.log('State changed:', state);
 };
 
+// Locks a boat by resetting the state to initial representation
 lockBoat = function() {
    state.boatmodel = undefined;
    state.start     = undefined;
    state.alignment = undefined;
 };
 
-startGame = function() {
+// Clears the field to start the game
+startGame = function(idx) {
    var $tds = $('tbody td:not(.shead)');
 
-   $tds.off();
    $tds.removeClass('boat');
 
    $('#legend').css('visibility', 'hidden');
    $('table').addClass('game-mode');
-
-   $tds.on('click', shoot);
 };
 
-shoot = function(idx) {
+// Marks a hit on the field
+markHit = function(idx) {
    var $this = $(idx);
 
    $this.text('☠');
 };
 
-reset = function() {
-   state.boatmodel = undefined;
-   state.start     = undefined;
-   state.alignment = undefined;
-
-   var $tds = $('tbody td:not(.shead)');
-   $tds.removeClass();
-   $tds.text('');
-   $tds.off();
-   $tds.on('click', addBoat);
-   $('#legend').css('visibility', 'visible');
+// Though one: refreshes the browser window to restart game
+reset = function(idx) {
+   window.location.reload()
 };

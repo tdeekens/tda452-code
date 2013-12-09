@@ -4,7 +4,9 @@ import DataTypes
 import Battleship
 import Data.Maybe
 import Data.List
+import Wrapper
 
+{-
 -- Prints a field
 printField :: Field -> IO ()
 printField f = putStr (unlines (map printRow rows'))
@@ -20,7 +22,7 @@ printCell :: Cell -> String
 printCell Nothing   = "_"
 printCell (Just True)  = "x"
 printCell (Just False)  = "."
-
+-}
 
 
 {-

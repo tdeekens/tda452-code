@@ -3,6 +3,7 @@ module Battleship where
 import Test.QuickCheck
 import Data.Maybe
 import Data.List
+import System.Random
 import DataTypes
 import Wrapper
 
@@ -179,6 +180,21 @@ isBoatSunk :: Field -> [Coord] -> Bool
 isBoatSunk f c = all (\x -> isJust (r!!(fst x)!!(snd x))) c
   where
     r = rows f
+
+
+-------------------------------------------------------------------------
+-- All possible shots
+fullShots :: [(Coord)]
+fullShots = [(i,j) | i <- [0..9], j <- [0..9]]
+
+-- Shuffles the shots to be in random order
+shuffleShots :: StdGen -> [(Coord)] -> [(Coord)]
+shuffleShots _ [] = []
+shuffleShots g s  = item : shuffleShots g' rest
+  where
+    (pos, g') = randomR (0, length s - 1) g
+    item      = s!!pos
+    rest      = delete item s
 -------------------------------------------------------------------------
 -- AI
 {-
@@ -243,6 +259,8 @@ implementation = Interface {
    , iAllShipsSunken = allShipsSunken
    , iExampleFleet = exampleFleet
    , iPrintField = printField
+   , iShuffleShots = shuffleShots
+   , iFullShots = fullShots
 }
 
 main :: IO ()

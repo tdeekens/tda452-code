@@ -2,7 +2,7 @@ module Battleship where
 
 import Data.Maybe
 import Data.List
-import System.Random
+import Haste.Random
 import DataTypes
 import Wrapper
 
@@ -37,6 +37,13 @@ craftBoat c a s | s' == 5 = Boat AircraftCarrier c a
    where
      s' = length s
 
+-- Flips a boat's alignment
+flipAlignment :: Boat -> Boat
+flipAlignment (Boat m s a) = Boat m s fa
+  where
+    fa = if a == Horizontal
+            then Vertical
+            else Horizontal
 
 -- Returns an empty battlefield (untouched cells only)
 emptyField :: Field
@@ -152,8 +159,8 @@ shootAtCoordinate field c fleet
     --}
 
 shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Int)
-shootAtCoordinate field c fleet 
-    | isNothing bh = (updateField field [c] (Just False),0)
+shootAtCoordinate field c fleet
+    | isNothing bh = (updateField field [c] (Just False), 0)
     | otherwise    = case isBoatSunk field (bc \\ [c]) of
                         False -> (updateField field [c] (Just True),1)
                         True  -> (updateField field [c] (Just True),2)
@@ -186,7 +193,7 @@ fullShots :: [(Coord)]
 fullShots = [(i,j) | i <- [0..9], j <- [0..9]]
 
 -- Shuffles the shots to be in random order
-shuffleShots :: StdGen -> [(Coord)] -> [(Coord)]
+shuffleShots :: Seed -> [(Coord)] -> [(Coord)]
 shuffleShots _ [] = []
 shuffleShots g s  = item : shuffleShots g' rest
   where
@@ -197,7 +204,7 @@ shuffleShots g s  = item : shuffleShots g' rest
 -- AI
 {-
 newFleet :: Fleet
-newFleet = 
+newFleet =
   let nf = rFleet in
      if isValidFleet nf
       then return nf

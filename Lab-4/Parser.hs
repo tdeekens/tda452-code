@@ -4,7 +4,6 @@ import DataTypes
 import Battleship
 import Data.Maybe
 import Data.List
-import Wrapper
 
 {-
 -- Prints a field

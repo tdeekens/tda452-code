@@ -5,7 +5,7 @@ import DataTypes
 import Test.QuickCheck
 import Data.List
 
-
+{-
 -- Generates random model
 rModel :: Gen Model
 rModel = frequency
@@ -57,7 +57,7 @@ rFleet = do
 
 instance Arbitrary Fleet where
 	arbitrary = rFleet
-	
+-}
 prop_boatCoord :: Boat -> Bool
 prop_boatCoord b = (length coords == (sizeOfModel $ model b)) &&
 					case a of

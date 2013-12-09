@@ -26,17 +26,12 @@ config = {
 }
 
 state = {
-   booked: [],
    boatmodel: undefined,
    start: undefined,
    alignment: undefined
 };
 
 selectBoat = function(idx) {
-   if (!true) { //tobe validation in haskell
-      return false;
-   }
-
    var $this     = $(idx);
    var boatmodel = $this.attr('id');
 
@@ -46,6 +41,10 @@ selectBoat = function(idx) {
 
    console.log('State changed:', state);
 };
+
+getState = function() {
+   return state.boatmodel + "|" + state.start.join("-") + "|" + state.alignment;
+}
 
 addBoat = function(idx) {
    if (state.boatmodel === undefined) {
@@ -61,7 +60,7 @@ addBoat = function(idx) {
 
    state.start = [position[0]--, position[1]--];
 
-   markHorizontal(true);
+   //markHorizontal(true);
 
    console.log('State changed:', state);
 }
@@ -77,7 +76,7 @@ markHorizontal = function(book) {
 
    $cells = $cells.slice(cell, length);
 
-   if (book === true) {
+   if (book == true) {
       $cells.addClass('boat');
       $cells.data('model', boatmodel);
    } else {
@@ -95,7 +94,8 @@ markVertically = function(book) {
    var length = column + config.sizes[boatmodel];
 
    $rows = $rows.slice(column, length);
-   if (book === true) {
+
+   if (book == true) {
       $.each($rows, function(i, row) {
          var $row = $(row);
          var $cell = $( $row.find('td').get(column) );
@@ -127,40 +127,27 @@ flipBoat = function() {
 };
 
 lockBoat = function() {
-   if (!true) { // ask haskell here
-      alert("Duplicate boat or invalid position!");
-      return false;
-   } else {
-      state.boatmodel = undefined;
-      state.start     = undefined;
-      state.alignment = undefined;
-   }
+   state.boatmodel = undefined;
+   state.start     = undefined;
+   state.alignment = undefined;
 };
 
 startGame = function() {
-   if (!true) { // ask haskell here
-      alert("Game can't be started, please positions your boats!");
-      return false;
-   } else {
-      var $tds = $('tbody td:not(.shead)');
-      $tds.off();
-      $tds.removeClass('boat');
+   var $tds = $('tbody td:not(.shead)');
 
-      $('#legend').css('visibility', 'hidden');
-      $('table').addClass('game-mode');
+   $tds.off();
+   $tds.removeClass('boat');
 
-      $tds.on('click', shoot);
-   }
+   $('#legend').css('visibility', 'hidden');
+   $('table').addClass('game-mode');
+
+   $tds.on('click', shoot);
 };
 
 shoot = function(idx) {
-   if (!true) { // not hit: ask haskell here
-      return false;
-   } else {
-      var $this = $(idx);
+   var $this = $(idx);
 
-      $this.text('☠');
-   }
+   $this.text('☠');
 };
 
 reset = function() {

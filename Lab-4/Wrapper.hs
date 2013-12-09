@@ -2,7 +2,7 @@ module Wrapper where
 
 import Data.Char
 import Data.List
-import System.Random
+import Haste.Random
 import DataTypes
 
 data Interface = Interface
@@ -12,7 +12,7 @@ data Interface = Interface
   , iShootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Int)
   , iAllShipsSunken :: Field -> Bool
   , iPrintField :: Field -> IO ()
-  , iShuffleShots :: StdGen -> [(Coord)] -> [(Coord)]
+  , iShuffleShots :: Seed -> [(Coord)] -> [(Coord)]
   , iFullShots :: [(Coord)]
   }
 
@@ -39,9 +39,9 @@ getRandomShots = do
 
 runGame :: Interface -> IO ()
 runGame i = do
+  let g = mkSeed 42 -- doesnt return IO Seed
   putStrLn "Welcome to the game."
   iPrintField i (iEmptyField i)
-  g <- newStdGen
   let shots = iShuffleShots i g (iFullShots i)
   gameLoop i 0 (iEmptyField i) (iExampleFleet i) shots
   --gameLoop i (iShuffle i g (iFullDeck i)) (iEmpty i)
@@ -74,7 +74,7 @@ finish :: Int -> IO ()
 finish shots = do
   putStrLn ("The computer beat you with " ++ show shots ++ " shots")
 
-twoRandomIntegers :: StdGen -> (Int, Int)
+twoRandomIntegers :: Seed -> (Int, Int)
 twoRandomIntegers g = (n1, n2)
   where
   	(n1,g1) = randomR (0,9) g

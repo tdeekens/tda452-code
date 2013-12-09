@@ -25,7 +25,7 @@ sizeOfModel Submarine       = 3
 sizeOfModel Destroyer       = 3
 sizeOfModel PatrolBoat      = 2
 
--- Returns a new boat with provided starting coordinates, alignment and 
+-- Returns a new boat with provided starting coordinates, alignment and
 -- a list of occupied coordinates
 {-
   This is wrong now
@@ -54,14 +54,14 @@ allShipsSunken f = length (concat (map (filter (==Just True)) r)) == sizeOfFleet
 
 -- Returns a list of coordinates occupied by a boat on a field
 boatCoord :: Boat -> [Coord]
-boatCoord (Boat m (x,y) Horizontal) = 
+boatCoord (Boat m (x,y) Horizontal) =
         [(x,y + fromIntegral(i)) | i <- [0..(sizeOfModel m -1)]]
-boatCoord (Boat m (x,y) Vertical) = 
+boatCoord (Boat m (x,y) Vertical) =
         [(x + fromIntegral(i),y) | i <- [0..(sizeOfModel m -1)]]
 
 -- Checks if coordinates of a boat do not go out the field borders
 areBoatCoordOkay :: Boat -> Bool
-areBoatCoordOkay (Boat m (x,y) a) = (x `elem` [0..9]) && (y `elem` [0..9]) 
+areBoatCoordOkay (Boat m (x,y) a) = (x `elem` [0..9]) && (y `elem` [0..9])
 
 -- Checks if the boat can be added to the fleet
 -- Returns true when a new boat does not overlap with the boats in the fleet
@@ -79,12 +79,11 @@ spaceLeftForModel f b  | (m == PatrolBoat)
                                 = length (elemIndices m fleetModels) < 2
                        | otherwise
                                 = not (m `elem` fleetModels)
-                       
-  where           
+  where
       m           = model b
       fleetModels = [model b | b <- (boats f)]
 
--- Checks if a boat can be added to a fleet 
+-- Checks if a boat can be added to a fleet
 -- and returns (updated fleet, True) if it is
 -- (old fleet, False) otherwise
 addToFleet :: Fleet -> Boat -> (Fleet, Bool)
@@ -143,7 +142,7 @@ updateCell f x b = Field ( r !!= (rw, r!!rw !!= (cl, b)) )
 -- Shoots at a position on a field with provided coordinates
 {--
 shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Bool)
-shootAtCoordinate field c fleet 
+shootAtCoordinate field c fleet
     | c `elem` (fleetCoord fleet) = (updateField field [c] (Just True),True)
     | otherwise                   = (updateField field [c] (Just False),False)
   where
@@ -209,7 +208,7 @@ newFleet =
 -------------------------------------------------------------------------
 -- Example Field
 example::Field
-example = 
+example =
    Field
      [ [Nothing, Just True, Just True, Just True, Just True, Just True, Nothing, Nothing, Nothing, Nothing]
      , [Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing]
@@ -225,8 +224,8 @@ example =
 
 -- Example Fleet
 exampleFleet :: Fleet
-exampleFleet = 
-  Fleet {boats = 
+exampleFleet =
+  Fleet {boats =
     [Boat {model = AircraftCarrier, start = (0,1), alignment = Horizontal},
      Boat {model = Battleship, start = (2,4), alignment = Horizontal},
      Boat {model = Submarine, start = (4,1), alignment = Horizontal},

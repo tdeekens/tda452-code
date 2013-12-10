@@ -4,7 +4,6 @@ import Data.Char
 import Data.List
 import System.Random
 import DataTypes
-import Generators
 
 data Interface = Interface
   { iEmptyField :: Field
@@ -17,6 +16,8 @@ data Interface = Interface
   , iFullShots :: [(Coord)]
   , iAddToFleet :: Fleet -> Boat -> (Fleet, Bool)
   , iIsValidFleet :: Fleet -> Bool
+  , iSinkShip :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
+  , iDirections :: [Direction]
   }
 
 
@@ -77,7 +78,7 @@ runGame' i f = do
   g <- newStdGen
   let shots = iShuffleShots i g (iFullShots i)
   gameLoop i 0 (iEmptyField i) f shots
-
+{-
 -- Play until all ships are sunk.
 gameLoop :: Interface -> Int -> Field -> Fleet -> [(Coord)] -> IO ()
 gameLoop i num field fleet [] = print "no shots left"
@@ -86,15 +87,58 @@ gameLoop i num field fleet shots = do
       res = iShootAtCoordinate i field c fleet
   case snd res of
   	0 -> putStrLn ("Miss")
-  	1 -> putStrLn ("Hit")
+  	1 -> do
+           putStrLn ("Hit")
+  		   iPrintField i (fst res)
+  		   let sinkRes = iSinkShip i (iDirections i) (fst res) fleet c (tail shots)
+  		   print shots
+  		   putStrLn ("Sink")
+  		   iPrintField i (fst sinkRes)
+  		   gameLoop i (num + 1) (fst sinkRes) fleet (snd sinkRes)
   	2 -> putStrLn ("Sink")
-  if (iAllShipsSunken i field)
+  if (iAllShipsSunken i (fst res))
   	then
   		finish (num + 1)
   	else
   		do
-  		iPrintField i (fst res)
-  		gameLoop i (num + 1) (fst res) fleet (tail shots)
+          print shots
+          iPrintField i (fst res)
+          if ((snd res) == 0 || (snd res)==2)
+            then
+              gameLoop i (num + 1) (fst res) fleet (tail shots)
+            else
+              finish (num + 1)
+-}
+
+
+gameLoop :: Interface -> Int -> Field -> Fleet -> [(Coord)] -> IO ()
+gameLoop i num field fleet [] = print "no shots left"
+gameLoop i num field fleet shots = do
+    if (iAllShipsSunken i field)
+    then
+       finish (num + 1)
+  	else
+        do
+          print shots
+          let c = head shots
+              res = iShootAtCoordinate i field c fleet
+          case snd res of
+            0 -> do
+                   putStrLn ("Miss")
+                   iPrintField i (fst res)
+                   gameLoop i (num + 1) (fst res) fleet (tail shots)
+            1 -> do
+                   putStrLn ("Hit")
+                   iPrintField i (fst res)
+                   let sinkRes = iSinkShip i (iDirections i) (fst res) fleet c (tail shots)
+                   print shots
+                   putStrLn ("Sink")
+                   iPrintField i (fst sinkRes)
+                   gameLoop i (num + 1) (fst sinkRes) fleet (snd sinkRes)
+            2 -> do
+            	   putStrLn ("Sink")
+                   iPrintField i (fst res)
+                   gameLoop i (num + 1) (fst res) fleet (tail shots)
 
 finish :: Int -> IO ()
 finish shots = do

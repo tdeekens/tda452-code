@@ -116,7 +116,7 @@ gameLoop i num field fleet [] = print "no shots left"
 gameLoop i num field fleet shots = do
     if (iAllShipsSunken i field)
     then
-       finish (num + 1)
+       finish num
   	else
         do
           print shots
@@ -134,7 +134,8 @@ gameLoop i num field fleet shots = do
                    print shots
                    putStrLn ("Sink")
                    iPrintField i (fst sinkRes)
-                   gameLoop i (num + 1) (fst sinkRes) fleet (snd sinkRes)
+                   let us = (length shots) - (length (snd sinkRes))
+                   gameLoop i (num + us) (fst sinkRes) fleet (snd sinkRes)
             2 -> do
             	   putStrLn ("Sink")
                    iPrintField i (fst res)

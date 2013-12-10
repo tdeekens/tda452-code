@@ -10,11 +10,6 @@ import DataTypes
    Anna Averianova & Tobias Deekens, 2013
 -}
 
--- is the fleet complete - done
--- AI for computer
--- Generate fleet
-
-
 -- Returns the size of a given boat model
 sizeOfModel :: Model -> Int
 sizeOfModel AircraftCarrier = 5
@@ -151,18 +146,9 @@ updateCell f x b = Field ( r !!= (rw, r!!rw !!= (cl, b)) )
     chopped = splitAt idx l
 
 -- Shoots at a position on a field with provided coordinates
-{--
-shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Bool)
-shootAtCoordinate field c fleet
-    | c `elem` (fleetCoord fleet) = (updateField field [c] (Just True),True)
-    | otherwise                   = (updateField field [c] (Just False),False)
-  where
-    cell = (rows field)!!rIdx!!cIdx
-    rIdx = fst c
-    cIdx = snd c
-    bh   = whichBoatHit c f
-    --}
-
+-- 0 == miss
+-- 1 == hit
+-- 2 == sink
 shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Int)
 shootAtCoordinate field c fleet
     | isNothing bh = (updateField field [c] (Just False), 0)
@@ -191,7 +177,6 @@ isBoatSunk f c = all (\x -> isJust (r!!(fst x)!!(snd x))) c
   where
     r = rows f
 
-
 -------------------------------------------------------------------------
 -- All possible shots
 fullShots :: [(Coord)]
@@ -206,45 +191,67 @@ shuffleShots g s  = item : shuffleShots g' rest
     item      = s!!pos
     rest      = delete item s
 
-
-
-{-
 -- Takes a current number of shots, a field, a fleet and a coord where
 -- the ship has been hit at
-sinkShip :: Field -> Fleet -> [Coord] -> (Field, Int)
-sinkShip fd ft ((x,y):cs) = walkSide dirs fd ft (x-1,y)
+sinkShip :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
+sinkShip dirs fd ft c shs | (trd' try) = sinkShip ds (snd' try) ft c shs'
+                          | otherwise  = ( (snd' try), shs')
   where
-    dirs = [North, South, West, East]
+    d    = head dirs
+    ds   = tail dirs
+    try  = walkSide d fd ft c []
+    shs' = shs\\(fst' try)
 
+-- Temp, updates the field at the initial coordinate
+-- (in the future, assumed that the filed is already updated with this hit)
+sinkShip' :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
+sinkShip' dirs fd ft c shs | (trd' try) = sinkShip' ds (snd' try) ft c shs'
+                           | otherwise  = ( (snd' try), shs')
+  where
+    d    = head dirs
+    ds   = tail dirs
+    try  = walkSide d fd' ft c []
+    fd'  = updateField fd [c] (Just True)
+    shs' = shs\\(fst' try)
 
-walkSide :: [Direction] -> Field -> Fleet -> Coord -> (Field, Int, [(Coord)])
-walkSide (North:ds) fd ft c | res == Nothing = undefined -- try with next dirs
+-- Shoots the filed in a given direction.
+-- Returns a list of shots (empty when a shot in given direction is impossibe,
+-- updated field and
+-- True if the ship not sunk and another direction walk needed
+-- False if the ship has been sunk
+walkSide :: Direction -> Field -> Fleet -> Coord -> [Coord] -> ([Coord], Field, Bool)
+walkSide d fd ft c sh | t == Nothing   = ([], fd, True)
+                      | (snd res) == 1 = walkSide d (fst res) ft t' (t':sh)
+                      | (snd res) == 2 = (t':sh, (fst res), False)
+                      | (snd res) == 0 = (t':sh, (fst res), True)
    where
-    dirs = [South, West, East]
-    res  = shootAtCoordinate fd c ft
+     t   = nextTarget d c
+     t'  = fromJust t
+     res = shootAtCoordinate fd (fromJust t) ft
 
-target :: Direction -> Coord -> Coord
-target North (x,y) = (x-1,y)
-target South (x,y) = (x+1,y)
-target East  (x,y) = (x,y+1)
-target West  (x,y) = (x,y-1)-}
+-- Returns a next coordinate in a given direction
+-- Returns Nothing if next cell does not exist
+nextTarget :: Direction -> Coord -> Maybe Coord
+nextTarget North (0,_) = Nothing
+nextTarget North (x,y) = Just (x-1,y)
+nextTarget South (9,_) = Nothing
+nextTarget South (x,y) = Just (x+1,y)
+nextTarget East  (_,9) = Nothing
+nextTarget East  (x,y) = Just (x,y+1)
+nextTarget West  (_,0) = Nothing
+nextTarget West  (x,y) = Just (x,y-1)
+
+fst':: (a,b,c) -> a
+fst' (a,_,_) = a
+
+snd':: (a,b,c) -> b
+snd' (_,b,_) = b
+
+trd':: (a,b,c) -> c
+trd' (_,_,c) = c
+
 -------------------------------------------------------------------------
--- AI
-{-
-newFleet :: Fleet
-newFleet =
-  let nf = rFleet in
-     if isValidFleet nf
-      then return nf
-     else return newFleet-}
 
-
--------------------------------------------------------------------------
--- Constructs user's fleet
-constructFleet :: Fleet -> Boat -> Fleet
-constructFleet (Fleet []) b = undefined
-
--------------------------------------------------------------------------
 -- Example Field
 example::Field
 example =
@@ -288,4 +295,3 @@ printCell :: Cell -> String
 printCell Nothing   = "_"
 printCell (Just True)  = "x"
 printCell (Just False)  = "."
--------------------------------------------------------------------------

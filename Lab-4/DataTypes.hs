@@ -41,6 +41,7 @@ data Fleet = Fleet { boats :: [Boat] }
 data Direction =  North | South | West | East
    deriving (Enum, Eq, Show)
 
+directions = [North, South, West, East] :: [Direction]
 {-
 data Player = Player {
 	field :: Field,

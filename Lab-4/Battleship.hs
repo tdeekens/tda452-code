@@ -4,7 +4,6 @@ import Data.Maybe
 import Data.List
 import Haste.Random
 import DataTypes
-import Wrapper
 
 {-
    Lab Assignment 4
@@ -44,6 +43,9 @@ flipAlignment (Boat m s a) = Boat m s fa
     fa = if a == Horizontal
             then Vertical
             else Horizontal
+
+setStart :: Boat -> Coord -> Boat
+setStart (Boat m s a) s' = Boat m s' a
 
 -- Returns an empty battlefield (untouched cells only)
 emptyField :: Field
@@ -165,8 +167,8 @@ shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Int)
 shootAtCoordinate field c fleet
     | isNothing bh = (updateField field [c] (Just False), 0)
     | otherwise    = case isBoatSunk field (bc \\ [c]) of
-                        False -> (updateField field [c] (Just True),1)
-                        True  -> (updateField field [c] (Just True),2)
+                        False -> (updateField field [c] (Just True), 1)
+                        True  -> (updateField field [c] (Just True), 2)
   where
     cell = (rows field)!!rIdx!!cIdx
     rIdx = fst c
@@ -287,22 +289,3 @@ printCell Nothing   = "_"
 printCell (Just True)  = "x"
 printCell (Just False)  = "."
 -------------------------------------------------------------------------
-
-implementation = Interface {
-   iEmptyField = emptyField
-   , iEmptyFleet = emptyFleet
-   , iShootAtCoordinate = shootAtCoordinate
-   , iAllShipsSunken = allShipsSunken
-   , iExampleFleet = exampleFleet
-   , iPrintField = printField
-   , iShuffleShots = shuffleShots
-   , iFullShots = fullShots
-   , iAddToFleet = addToFleet
-   , iIsValidFleet = isValidFleet
-}
-
-main :: IO ()
-main = runGame implementation
-
-position :: IO ()
-position = positionFleet implementation

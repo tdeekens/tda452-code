@@ -91,3 +91,12 @@ table tbody td.boat {
    background: none;
    display: block;
 }
+
+#msg-box, #debug-box {
+   margin-top: 25px;
+   text-align: center;
+}
+
+#debug-box {
+   font-size: .8em;
+}

@@ -8,7 +8,8 @@ function js_click(obj, callback) {
          callback,
          [
             // ... callbacks get the DOM Node's id to identify them
-            [0, "#" + $(this).attr('id')]
+            [0, "#" + $(this).attr('id')],
+            [0, getState()]
          , 0]
       );
    });
@@ -56,7 +57,13 @@ selectBoat = function(idx) {
 
 // Bound by Haskell to get the current UI's state as String
 getState = function() {
-   return state.boatmodel + "|" + state.start.join("-") + "|" + state.alignment;
+   var start = "";
+
+   if (state.start !== undefined) {
+      start = state.start.join("-");
+   }
+
+   return state.boatmodel + "|" + start + "|" + state.alignment;
 }
 
 // Adds a boat to the field by coloring cells, also sets state's start
@@ -66,7 +73,7 @@ addBoat = function(idx) {
       return false;
    }
 
-   markHorizontal(false);
+   markHorizontally(false);
 
    var $this      = $(idx)
        , id       = $this.attr('id')
@@ -74,13 +81,13 @@ addBoat = function(idx) {
 
    state.start = [position[0]--, position[1]--];
 
-   markHorizontal(true);
+   markHorizontally(true);
 
    console.log('State changed:', state);
 }
 
 // Colors/uncolors cells horitzonally based on the book flag
-markHorizontal = function(book) {
+markHorizontally = function(book) {
    var boatmodel = state.boatmodel;
 
    var row  = state.start[0] + 1
@@ -105,11 +112,12 @@ markVertically = function(book) {
    var boatmodel = state.boatmodel;
 
    var $rows     = $('tr')
-       , column = state.start[0] + 1;
+       , column = state.start[1] + 1
+       , row  = state.start[0] + 1
 
-   var length = column + config.sizes[boatmodel];
+   var length = row + config.sizes[boatmodel];
 
-   $rows = $rows.slice(column, length);
+   $rows = $rows.slice(row, length);
 
    if (book == true) {
       $.each($rows, function(i, row) {
@@ -132,12 +140,12 @@ markVertically = function(book) {
 flipBoat = function() {
    if(state.alignment === 'horizontal') {
       state.alignment = 'vertical';
-      markHorizontal(false);
+      markHorizontally(false);
       markVertically(true);
    } else {
       state.alignment = 'horizontal';
       markVertically(false);
-      markHorizontal(true);
+      markHorizontally(true);
    }
 
    console.log('State changed:', state);
@@ -162,12 +170,33 @@ startGame = function(idx) {
 
 // Marks a hit on the field
 markHit = function(idx) {
-   var $this = $(idx);
+   var $this = $("#" + idx);
 
    $this.text('☠');
 };
 
+// Marks a hit on the field
+markMiss = function(idx) {
+   var $this = $("#" + idx);
+
+   $this.text('☹');
+};
+
 // Though one: refreshes the browser window to restart game
-reset = function(idx) {
+resetGame = function(idx) {
    window.location.reload()
 };
+
+// Outputs a string within the game's message box
+message = function(msg) {
+   $msgBox = $("#msg-box");
+
+   $msgBox.html(msg);
+}
+
+// Outputs a string within the game's debug box
+debug = function(msg) {
+   $debugBox = $("#debug-box");
+
+   $debugBox.prepend("<br />" + msg);
+}

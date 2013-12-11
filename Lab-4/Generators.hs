@@ -43,7 +43,6 @@ instance Arbitrary Boat where
 	arbitrary = rBoat
 
 -- Generates a fleet
-
 rFleet :: Gen Fleet
 rFleet = do
   b1 <- rBoat

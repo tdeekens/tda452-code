@@ -42,13 +42,6 @@ data Direction =  North | South | West | East
    deriving (Enum, Eq, Show)
 
 directions = [North, South, West, East] :: [Direction]
-{-
-data Player = Player {
-	field :: Field,
-	fleet :: Fleet,
-	shots :: [(Coord)]
-}
-	deriving (Show) -}
 
 -- A constant defining the size of a complete fleet
 -- (sum of the sizes of all boats in a complete field)

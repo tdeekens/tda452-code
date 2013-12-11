@@ -32,7 +32,6 @@ craftBoat c a s | s' == 5 = Boat AircraftCarrier c a
    where
      s' = length s
 
-
 -- Returns an empty battlefield (untouched cells only)
 emptyField :: Field
 emptyField = Field (replicate 10 (replicate 10 Nothing))
@@ -136,19 +135,6 @@ updateCell f x b = Field ( r !!= (rw, r!!rw !!= (cl, b)) )
   where
     chopped = splitAt idx l
 
--- Shoots at a position on a field with provided coordinates
-{--
-shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Bool)
-shootAtCoordinate field c fleet
-    | c `elem` (fleetCoord fleet) = (updateField field [c] (Just True),True)
-    | otherwise                   = (updateField field [c] (Just False),False)
-  where
-    cell = (rows field)!!rIdx!!cIdx
-    rIdx = fst c
-    cIdx = snd c
-    bh   = whichBoatHit c f
-    --}
-
 -- 0 == miss
 -- 1 == hit
 -- 2 == sink
@@ -203,18 +189,6 @@ sinkShip dirs fd ft c shs | (trd' try) = sinkShip ds (snd' try) ft c shs'
     d    = head dirs
     ds   = tail dirs
     try  = walkSide d fd ft c []
-    shs' = shs\\(fst' try)
-
--- Temp, updates the field at the initial coordinate
--- (in the future, assumed that the filed is already updated with this hit)
-sinkShip' :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
-sinkShip' dirs fd ft c shs | (trd' try) = sinkShip' ds (snd' try) ft c shs'
-                           | otherwise  = ( (snd' try), shs')
-  where
-    d    = head dirs
-    ds   = tail dirs
-    try  = walkSide d fd' ft c []
-    fd'  = updateField fd [c] (Just True)
     shs' = shs\\(fst' try)
 
 -- Shoots the filed in a given direction.
@@ -312,6 +286,7 @@ implementation = Interface {
    , iIsValidFleet = isValidFleet
    , iSinkShip = sinkShip
    , iDirections = directions
+   , iDraw = drawShotResults
 }
 
 main :: IO ()

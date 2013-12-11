@@ -1,0 +1,6 @@
+AircraftCarrier (0,1) H
+Battleship (2,4) H
+Submarine (4,1) H
+Destroyer (5,5) V
+PatrolBoat (9,0) H
+PatrolBoat (9,8) H

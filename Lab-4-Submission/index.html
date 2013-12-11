@@ -1,0 +1,226 @@
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Battleship :: Sink 'em all!</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="style.css">
+        <script src="jquery.js"></script>
+        <script src="UI.js"></script>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="legend">
+                <h3>The fleet</h3>
+
+                <span class="boat-model"><h4>aircraft carrier</h4></span>
+
+                <div class="boat" id="aircraftcarrier">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell last"></span>
+                </div>
+
+                <span class="boat-model"><h4>battleship</h4></span>
+
+                <div class="boat" id="battleship">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell last"></span>
+                </div>
+
+                <span class="boat-model"><h4>submarine</h4></span>
+
+                <div class="boat" id="submarine">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell last"></span>
+                </div>
+
+                <span class="boat-model"><h4>destroyer</h4></span>
+
+                <div class="boat" id="destroyer">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell last"></span>
+                </div>
+
+                <span class="boat-model"><h4>patrol boat</h4></span>
+
+                <div class="boat" id="patrolboat">
+                    <span class="cell"></span>
+                    <span class="cell last"></span>
+                </div>
+            </div>
+
+            <div id="controls">
+                <h3>Controls</h3>
+
+                <button id="lock" alt="lock position">★ lock</button>
+                <button id="flip" alt="flip position">♻ flip</button>
+                <button id="start" alt="start game">✓ start</button>
+                <button id="reset" alt="reset game">✗ reset</button>
+            </div>
+
+            <h3>Your field</h3>
+
+            <table id="field" class="">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                        <th>8</th>
+                        <th>9</th>
+                        <th>10</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="shead">1</td>
+                        <td id="0-0"></td>
+                        <td id="0-1"></td>
+                        <td id="0-2"></td>
+                        <td id="0-3"></td>
+                        <td id="0-4"></td>
+                        <td id="0-5"></td>
+                        <td id="0-6"></td>
+                        <td id="0-7"></td>
+                        <td id="0-8"></td>
+                        <td id="0-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">2</td>
+                        <td id="1-0"></td>
+                        <td id="1-1"></td>
+                        <td id="1-2"></td>
+                        <td id="1-3"></td>
+                        <td id="1-4"></td>
+                        <td id="1-5"></td>
+                        <td id="1-6"></td>
+                        <td id="1-7"></td>
+                        <td id="1-8"></td>
+                        <td id="1-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">3</td>
+                        <td id="2-0"></td>
+                        <td id="2-1"></td>
+                        <td id="2-2"></td>
+                        <td id="2-3"></td>
+                        <td id="2-4"></td>
+                        <td id="2-5"></td>
+                        <td id="2-6"></td>
+                        <td id="2-7"></td>
+                        <td id="2-8"></td>
+                        <td id="2-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">4</td>
+                        <td id="3-0"></td>
+                        <td id="3-1"></td>
+                        <td id="3-2"></td>
+                        <td id="3-3"></td>
+                        <td id="3-4"></td>
+                        <td id="3-5"></td>
+                        <td id="3-6"></td>
+                        <td id="3-7"></td>
+                        <td id="3-8"></td>
+                        <td id="3-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">5</td>
+                        <td id="4-0"></td>
+                        <td id="4-1"></td>
+                        <td id="4-2"></td>
+                        <td id="4-3"></td>
+                        <td id="4-4"></td>
+                        <td id="4-5"></td>
+                        <td id="4-6"></td>
+                        <td id="4-7"></td>
+                        <td id="4-8"></td>
+                        <td id="4-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">6</td>
+                        <td id="5-0"></td>
+                        <td id="5-1"></td>
+                        <td id="5-2"></td>
+                        <td id="5-3"></td>
+                        <td id="5-4"></td>
+                        <td id="5-5"></td>
+                        <td id="5-6"></td>
+                        <td id="5-7"></td>
+                        <td id="5-8"></td>
+                        <td id="5-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">7</td>
+                        <td id="6-0"></td>
+                        <td id="6-1"></td>
+                        <td id="6-2"></td>
+                        <td id="6-3"></td>
+                        <td id="6-4"></td>
+                        <td id="6-5"></td>
+                        <td id="6-6"></td>
+                        <td id="6-7"></td>
+                        <td id="6-8"></td>
+                        <td id="6-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">8</td>
+                        <td id="7-0"></td>
+                        <td id="7-1"></td>
+                        <td id="7-2"></td>
+                        <td id="7-3"></td>
+                        <td id="7-4"></td>
+                        <td id="7-5"></td>
+                        <td id="7-6"></td>
+                        <td id="7-7"></td>
+                        <td id="7-8"></td>
+                        <td id="7-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">9</td>
+                        <td id="8-0"></td>
+                        <td id="8-1"></td>
+                        <td id="8-2"></td>
+                        <td id="8-3"></td>
+                        <td id="8-4"></td>
+                        <td id="8-5"></td>
+                        <td id="8-6"></td>
+                        <td id="8-7"></td>
+                        <td id="8-8"></td>
+                        <td id="8-9"></td>
+                    </tr>
+                    <tr>
+                        <td class="shead">10</td>
+                        <td id="9-0"></td>
+                        <td id="9-1"></td>
+                        <td id="9-2"></td>
+                        <td id="9-3"></td>
+                        <td id="9-4"></td>
+                        <td id="9-5"></td>
+                        <td id="9-6"></td>
+                        <td id="9-7"></td>
+                        <td id="9-8"></td>
+                        <td id="9-9"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="msg-box">Welcome to Battleship! Position your ships!</div>
+            <div id="debug-box"></div>
+        </div>
+    </body>
+</html>

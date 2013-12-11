@@ -1,0 +1,102 @@
+body {
+   text-align: center;
+   font-family: Tahoma;
+}
+
+#wrapper {
+   text-align: left;
+   margin: 50px 0;
+   width: 600px;
+   margin: 50px auto;
+}
+
+#legend {
+   float: left;
+   text-align: right;
+   margin-right: 50px;
+}
+
+#legend .boat {
+   border: 1px solid black;
+   display: inline-block;
+   height: 20px;
+   background: #EFFEC7;
+   cursor: hand;
+}
+
+#legend .boat-model {
+}
+
+#legend .boat-model h4 {
+   margin: 0;
+   padding: 0;
+}
+
+#legend .boat .cell {
+   display: inline-block;
+   width: 20px;
+   height: 20px;
+   border-right: 1px solid black;
+}
+
+#legend .boat .cell.last {
+   border-right: 0;
+}
+
+table {
+   border: 1px solid black;
+   border-collapse: collapse;
+}
+
+table thead th, table tbody td.shead {
+   width: 25px;
+   height: 25px;
+   border: 0;
+   font-weight: bold;
+   background: #FAECE5;
+}
+
+table tbody td.shead {
+   padding-right: 5px;
+   text-align: right;
+}
+
+table tbody td {
+   border: 1px solid black;
+   width: 25px;
+   height: 25px;
+   text-align: center;
+}
+
+table td {
+   background: #C0FFEE;
+}
+
+table tbody td {
+   background: #C0FFEE;
+}
+
+table tbody td.boat {
+   background: #EFFEC7;
+}
+
+#controls {
+   float: right;
+   text-align: right;
+}
+
+#controls button {
+   font-size: 25px;
+   border: 0;
+   background: none;
+   display: block;
+}
+
+#msg-box, #debug-box {
+   margin-top: 25px;
+   text-align: center;
+}
+
+#debug-box {
+   font-size: .8em;
+}

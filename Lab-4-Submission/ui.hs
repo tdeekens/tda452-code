@@ -5,7 +5,7 @@ import Control.Monad(when)
 import DataTypes
 import Data.Maybe
 import Data.Char
-import Battleship
+import BattleshipHaste
 import Data.List
 import Haste.Random
 import Control.Monad.ST

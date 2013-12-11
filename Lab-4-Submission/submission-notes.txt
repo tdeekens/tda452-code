@@ -1,0 +1,12 @@
+Notes regarding submission
+
+- Battleship implemtation only allows for computer gunning down uses's ships
+- Haste caused trouble integrating the UI
+   - Haskell can not appropriately report back to JavaScript (Haste errors but tested without)
+   - UI.hs is bound to call functions in battleship.js
+- Wrapper.hs allows running game from command line
+- Implementation comprises is separated in
+   - Parsing fleets from files (running main)
+   - Simple AI shooting at fleet
+   - Web UI integrated with Haste
+   - Properties testing game logic where possible

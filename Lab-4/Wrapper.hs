@@ -20,6 +20,7 @@ data Interface = Interface
   , iIsValidFleet :: Fleet -> Bool
   , iSinkShip :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
   , iDirections :: [Direction]
+  , iDraw :: [Coord] -> Fleet -> IO ()
   , iPrintFleet :: Fleet -> IO ()
   }
 
@@ -61,7 +62,7 @@ runGame i f = do
   gameLoop i 0 (iEmptyField i) f shots
 
 gameLoop :: Interface -> Int -> Field -> Fleet -> [(Coord)] -> IO ()
-gameLoop i num field fleet [] = print "No shots left"
+gameLoop i num field fleet [] = print "No shots left."
 gameLoop i num field fleet shots = do
     if (iAllShipsSunken i field)
     then
@@ -72,22 +73,22 @@ gameLoop i num field fleet shots = do
               res = iShootAtCoordinate i field c fleet
           case snd res of
             0 -> do
-                   putStrLn ("Miss")
+                   putStrLn ("Miss at " ++ show c ++ " !")
                    iPrintField i (fst res)
                    gameLoop i (num + 1) (fst res) fleet (tail shots)
             1 -> do
-                   putStrLn ("Hit")
+                   putStrLn ("Hit at " ++ show c ++ " !")
                    iPrintField i (fst res)
                    let sinkRes = iSinkShip i (iDirections i) (fst res) fleet c (tail shots)
-                   putStrLn ("Sink")
+                   iDraw i ((tail shots)\\(snd sinkRes)) fleet
                    iPrintField i (fst sinkRes)
                    let us = (length shots) - (length (snd sinkRes))
                    gameLoop i (num + us) (fst sinkRes) fleet (snd sinkRes)
             2 -> do
-            	   putStrLn ("Sink")
+            	   putStrLn ("Sink at" ++ show c ++ "!")
                    iPrintField i (fst res)
                    gameLoop i (num + 1) (fst res) fleet (tail shots)
 
 finish :: Int -> IO ()
 finish shots = do
-  putStrLn ("The computer beat you with " ++ show shots ++ " shots")
+  putStrLn ("The computer beat you with " ++ show shots ++ " shots.")

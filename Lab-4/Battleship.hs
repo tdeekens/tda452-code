@@ -249,6 +249,38 @@ printFleet f = do
                printField fd'
   where fc = fleetCoord f
 
+-- Displays the shots used while attempting to sink the ship
+drawShotResults :: [Coord] -> Fleet -> IO ()
+drawShotResults []    f = putStrLn "Sunk one. Haha!"
+drawShotResults (c:cs) f | c `elem` fc = do
+                             putStrLn ("Hit at " ++ show c ++ "!")
+                             drawShotResults cs f
+                        | otherwise  = do
+                             putStrLn ("Miss" ++ show c ++ "!")
+                             drawShotResults cs f
+  where
+    fc = fleetCoord f
+
+implementation = Interface {
+   iEmptyField = emptyField
+   , iEmptyFleet = emptyFleet
+   , iShootAtCoordinate = shootAtCoordinate
+   , iAllShipsSunken = allShipsSunken
+   , iExampleFleet = exampleFleet
+   , iPrintField = printField
+   , iShuffleShots = shuffleShots
+   , iFullShots = fullShots
+   , iAddToFleet = addToFleet
+   , iIsValidFleet = isValidFleet
+   , iSinkShip = sinkShip
+   , iDirections = directions
+   , iPrintFleet = printFleet
+   , iDraw = drawShotResults
+}
+
+main :: IO ()
+main = startGame implementation
+
 -------------------------------------------------------------------------
 
 -- Example Field
@@ -279,22 +311,3 @@ exampleFleet =
      Boat {model = PatrolBoat, start = (9,8), alignment = Horizontal}]}
 
 -------------------------------------------------------------------------
-
-implementation = Interface {
-   iEmptyField = emptyField
-   , iEmptyFleet = emptyFleet
-   , iShootAtCoordinate = shootAtCoordinate
-   , iAllShipsSunken = allShipsSunken
-   , iExampleFleet = exampleFleet
-   , iPrintField = printField
-   , iShuffleShots = shuffleShots
-   , iFullShots = fullShots
-   , iAddToFleet = addToFleet
-   , iIsValidFleet = isValidFleet
-   , iSinkShip = sinkShip
-   , iDirections = directions
-   , iPrintFleet = printFleet
-}
-
-main :: IO ()
-main = startGame implementation

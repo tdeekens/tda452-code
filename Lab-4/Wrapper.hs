@@ -18,7 +18,6 @@ data Interface = Interface
   , iIsValidFleet :: Fleet -> Bool
   , iSinkShip :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
   , iDirections :: [Direction]
-  , iDraw :: [Coord] -> Fleet -> IO ()
   }
 
 
@@ -135,7 +134,6 @@ gameLoop i num field fleet shots = do
                    print shots
                    putStrLn ("Sink")
                    iPrintField i (fst sinkRes)
-                   iDraw i (shots\\(snd sinkRes)) fleet
                    let us = (length shots) - (length (snd sinkRes))
                    gameLoop i (num + us) (fst sinkRes) fleet (snd sinkRes)
             2 -> do

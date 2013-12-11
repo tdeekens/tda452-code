@@ -3,7 +3,19 @@ module Generators where
 import DataTypes
 import Test.QuickCheck
 import Data.List
+import System.Random
 
+-- Generates a field cell
+cell :: Gen (Maybe Bool)
+cell = frequency
+         [(7, return Nothing),
+          (3, return (Just True))]
+
+-- An instance for generating Arbitrary Field
+instance Arbitrary Field where
+  arbitrary =
+    do rows <- sequence [ sequence [ cell | j <- [0..9] ] | i <- [0..9] ]
+       return (Field rows)
 
 -- Generates random model
 rModel :: Gen Model
@@ -51,7 +63,11 @@ rFleet = do
   b4 <- rBoat
   b5 <- rBoat
   b6 <- rBoat
-  return (Fleet [b1,b2,b3,b4,b5])
+  return (Fleet [b1,b2,b3,b4,b5,b6])
 
 instance Arbitrary Fleet where
 	arbitrary = rFleet
+
+instance Arbitrary StdGen where
+  arbitrary = do n <- arbitrary
+                 return (mkStdGen n)

@@ -1,6 +1,7 @@
 module FleetParser where
 
 import DataTypes
+import Battleship
 import Data.Maybe
 import Data.List
 import Data.Char
@@ -85,6 +86,7 @@ readAndSolve fp = do
                    if (isJust f)
                    	then
                         if (isValidFleet (fst(fromJust f)))
-                        then print f
-                        else error "not valid fleet"
+                        then printFleet (fst(fromJust f))
+                        else do putStrLn "not valid fleet"
+                                printFleet (fst(fromJust f))
                    	else print f

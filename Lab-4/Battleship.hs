@@ -19,19 +19,6 @@ sizeOfModel Submarine       = 3
 sizeOfModel Destroyer       = 3
 sizeOfModel PatrolBoat      = 2
 
--- Returns a new boat with provided starting coordinates, alignment and
--- a list of occupied coordinates
-{-
-  This is wrong now
--}
-craftBoat :: Coord -> Alignment -> [Cell] -> Boat
-craftBoat c a s | s' == 5 = Boat AircraftCarrier c a
-                | s' == 4 = Boat Battleship c a
-                | s' == 3 = Boat Destroyer c a
-                | s' == 2 = Boat PatrolBoat c a
-   where
-     s' = length s
-
 -- Returns an empty battlefield (untouched cells only)
 emptyField :: Field
 emptyField = Field (replicate 10 (replicate 10 Nothing))
@@ -44,6 +31,8 @@ emptyFleet = Fleet ([])
 allShipsSunken :: Field -> Bool
 allShipsSunken f = length (concat (map (filter (==Just True)) r)) == sizeOfFleet
   where r = rows f
+
+-------------------------------------------------------------------------
 
 -- Returns a list of coordinates occupied by a boat on a field
 boatCoord :: Boat -> [Coord]
@@ -69,7 +58,7 @@ canBeInFleet f b = (fc `intersect` bc == []) && (areBoatCoordOkay b)
         bc = boatCoord b
 
 -- Checks if a boat of a given type can be added to the fleet
--- Returns false when the fleet already has an upper limit of models
+-- Returns false when the fleet already has an upper limit of this model
 spaceLeftForModel :: Fleet -> Boat -> Bool
 spaceLeftForModel f b  | (m == PatrolBoat)
                                 = length (elemIndices m fleetModels) < 2
@@ -110,6 +99,8 @@ isValidFleet f = (size == 6) && noIntersect
     models      = [ model b| b <- bs]
     noIntersect = (nub boatsCoord) == boatsCoord
 
+-------------------------------------------------------------------------
+
 -- Updates a field at a given set of coordinates with
 -- the provided value
 updateField :: Field -> [Coord] -> Maybe Bool -> Field
@@ -135,9 +126,12 @@ updateCell f x b = Field ( r !!= (rw, r!!rw !!= (cl, b)) )
   where
     chopped = splitAt idx l
 
--- 0 == miss
--- 1 == hit
--- 2 == sink
+-------------------------------------------------------------------------
+
+-- Shoots at a given coordinate, returns updated field and
+-- 0 in case of a "miss"
+-- 1 in case of a "hit"
+-- 2 in case of a "sink"
 shootAtCoordinate :: Field -> Coord -> Fleet -> (Field, Int)
 shootAtCoordinate field c fleet 
     | isNothing bh = (updateField field [c] (Just False),0)
@@ -167,6 +161,7 @@ isBoatSunk f c = all (\x -> isJust (r!!(fst x)!!(snd x))) c
     r = rows f
 
 -------------------------------------------------------------------------
+
 -- All possible shots
 fullShots :: [(Coord)]
 fullShots = [(i,j) | i <- [0..9], j <- [0..9]]
@@ -218,6 +213,8 @@ nextTarget East  (x,y) = Just (x,y+1)
 nextTarget West  (_,0) = Nothing
 nextTarget West  (x,y) = Just (x,y-1)
 
+
+-- Functions to get elements of a triple
 fst':: (a,b,c) -> a
 fst' (a,_,_) = a
 
@@ -228,6 +225,32 @@ trd':: (a,b,c) -> c
 trd' (_,_,c) = c
 
 -------------------------------------------------------------------------
+
+-- Prints a field
+printField :: Field -> IO ()
+printField f = putStr (unlines (map printRow rows'))
+  where
+    rows' = rows f
+
+-- Helper function printing a list of field cells on the screen
+printRow :: [Cell] -> String
+printRow = foldr ((++) . printCell) ""
+
+-- Helper function printing a field cell on the screen
+printCell :: Cell -> String
+printCell Nothing   = "_"
+printCell (Just True)  = "x"
+printCell (Just False)  = "."
+
+-- Prints Fleets positioning on the field
+printFleet :: Fleet -> IO ()
+printFleet f = do
+               let fd' = updateField emptyField fc (Just True)
+               printField fd'
+  where fc = fleetCoord f
+
+-------------------------------------------------------------------------
+
 -- Example Field
 example::Field
 example =
@@ -254,23 +277,7 @@ exampleFleet =
      Boat {model = Destroyer, start = (5,5), alignment = Vertical},
      Boat {model = PatrolBoat, start = (9,0), alignment = Horizontal},
      Boat {model = PatrolBoat, start = (9,8), alignment = Horizontal}]}
--------------------------------------------------------------------------
 
--- Prints a field
-printField :: Field -> IO ()
-printField f = putStr (unlines (map printRow rows'))
-  where
-    rows' = rows f
-
--- Helper function printing a list of field cells on the screen
-printRow :: [Cell] -> String
-printRow = foldr ((++) . printCell) ""
-
--- Helper function printing a field cell on the screen
-printCell :: Cell -> String
-printCell Nothing   = "_"
-printCell (Just True)  = "x"
-printCell (Just False)  = "."
 -------------------------------------------------------------------------
 
 implementation = Interface {
@@ -286,7 +293,6 @@ implementation = Interface {
    , iIsValidFleet = isValidFleet
    , iSinkShip = sinkShip
    , iDirections = directions
-   , iDraw = drawShotResults
 }
 
 main :: IO ()

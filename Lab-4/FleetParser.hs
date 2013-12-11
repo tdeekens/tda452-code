@@ -1,7 +1,6 @@
 module FleetParser where
 
 import DataTypes
-import Battleship
 import Data.Maybe
 import Data.List
 import Data.Char
@@ -77,16 +76,4 @@ pFleet s = case pBoat s of
                         Nothing       -> Just (Fleet [b], s')
                             | otherwise -> Nothing
              Nothing -> Nothing
-
--- Reads a file and tries to parse a fleet
-readAndSolve :: FilePath -> IO ()
-readAndSolve fp = do
-                   contents <- readFile fp
-                   let f = pFleet contents
-                   if (isJust f)
-                   	then
-                        if (isValidFleet (fst(fromJust f)))
-                        then printFleet (fst(fromJust f))
-                        else do putStrLn "not valid fleet"
-                                printFleet (fst(fromJust f))
-                   	else print f
+             

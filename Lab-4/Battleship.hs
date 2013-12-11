@@ -293,10 +293,8 @@ implementation = Interface {
    , iIsValidFleet = isValidFleet
    , iSinkShip = sinkShip
    , iDirections = directions
+   , iPrintFleet = printFleet
 }
 
 main :: IO ()
-main = runGame implementation
-
-position :: IO ()
-position = positionFleet implementation
+main = startGame implementation

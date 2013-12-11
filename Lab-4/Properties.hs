@@ -55,7 +55,10 @@ prop_updateCell f (x,y) v = (r'!!x'!!y') == v
      y' = abs (y `mod` 10)
      r' = rows (updateCell f (x',y') v)
 
---prop_updateField :: Field -> [Coord] -> Maybe Bool -> Bool
---prop_updateField f cs v = (map ((r'!!x'!!y') == v))
+prop_updateField :: Field -> [Coord] -> Maybe Bool -> Bool
+prop_updateField f cs v = and $ map (\(x, y) -> (r'!!x!!y) == v) cs'
+  where
+      cs' = map (\(x, y) -> (abs (x `mod` 10), abs (y `mod` 10))) cs
+      r'  = rows (updateField f cs' v)
 
 fewerChecks prop = quickCheckWith stdArgs{ maxSuccess = 3 } prop

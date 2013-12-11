@@ -32,6 +32,7 @@ foreign import ccall markHit    :: JSString -> IO ()
 foreign import ccall markMiss   :: JSString -> IO ()
 foreign import ccall message    :: JSString -> IO ()
 foreign import ccall debug      :: JSString -> IO ()
+foreign import ccall finish     :: JSString -> IO ()
 
 -- Define jQuery as j and a function binding an action onto it on the JS side
 j :: String -> (JQuery -> IO ()) -> IO ()
@@ -129,13 +130,30 @@ lockBoatProxy idx s r = do
 
 -- Proxy only starting the game if fleet is valid
 startGameProxy :: JSString -> JSString -> IORef State -> IO ()
-startGameProxy idx s r = do
+startGameProxy idx _ r = do
                           (State f) <- readIORef r
                           if isValidFleet f
                             then do
                                   runGame f
                                   --startGame idx
                             else message $ toJSString "Fleet not yet valid, game can't be started!"
+
+-- Draws results of firing a round
+drawShotResults :: [Coord] -> Fleet -> IO ()
+drawShotResults []     f               = do
+                                            debug $ toJSString "Sunk one. Haha!"
+                                            return ()
+drawShotResults (c:cs) f | c `elem` fc = do
+                                            markHit c'
+                                            drawShotResults cs f
+                         | otherwise   = do
+                                            markMiss c'
+                                            drawShotResults cs f
+  where
+    fc     = fleetCoord f
+    (x, y) = c
+    idx    = (show x) ++ "-" ++ (show y)
+    c'     = toJSString idx
 
 -- Lets get down to binding to JS functions
 bindUI :: IORef State -> IO ()
@@ -162,34 +180,33 @@ runGame f = do
   let shots = shuffleShots g fullShots
   gameLoop 0 emptyField f shots
 
--- Plays until all ships are sunken
 gameLoop :: Int -> Field -> Fleet -> [(Coord)] -> IO ()
-gameLoop num field fleet [] = message $ toJSString "Darn. Couldnt kill you!"
-gameLoop num field fleet shots = do
-  let c       = head shots
-      (x, y)  = c
-      c'      = (show x) ++ "-" ++ (show y)
-      res     = shootAtCoordinate field c fleet
-  case snd res of
-    0 -> markMiss $ toJSString c'
-    1 -> markHit $ toJSString c'
-    2 -> debug $ toJSString "Sunk one. Haha!"
-  if (allShipsSunken field)
-    then
-      finish (num + 1)
-    else
-      do
-      gameLoop (num + 1) (fst res) fleet (tail shots)
+gameLoop num field fleet []    = do message $ toJSString "Darn. Couldnt kill you!"
+gameLoop num field fleet shots =
+  do
+    case (allShipsSunken field) of
+      True -> do
+               finish (toJSString (show 42)) -- ifs its num, haste crashes
+      False -> do
+                let c       = head shots
+                    (x, y)  = c
+                    c'      = (show x) ++ "-" ++ (show y)
+                    res     = shootAtCoordinate field c fleet
+                case snd res of
+                  0 -> do
+                         markMiss $ toJSString c'
+                         gameLoop (num + 1) (fst res) fleet (tail shots)
+                  1 -> do
+                         let sinkRes = sinkShip directions (fst res) fleet c (tail shots)
+                         let us = (length shots) - (length (snd sinkRes))
+                         -- haste crashes if this remains in, tested without haste
+                         --drawShotResults (shots \\ (snd sinkRes)) fleet
+                         gameLoop (num + us) (fst sinkRes) fleet (snd sinkRes)
+                  2 -> do
+                         debug $ toJSString "Sunk one. Haha!"
+                         gameLoop (num + 1) (fst res) fleet (tail shots)
 
-finish :: Int -> IO ()
-finish shots = do
-                message $ toJSString ("The computer beat you with " ++ show shots ++ " shots!")
-
-twoRandomIntegers :: Seed -> (Int, Int)
-twoRandomIntegers g = (n1, n2)
-  where
-    (n1,g1) = randomR (0,9) g
-    (n2,g2) = randomR (0,9) g1
+-------------------------------------------------------------------------------------------
 
 main :: IO ()
 main = do

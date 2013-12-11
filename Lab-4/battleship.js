@@ -175,11 +175,29 @@ markHit = function(idx) {
    $this.text('☠');
 };
 
+// Marks a hits on the field
+markHits = function(idxs) {
+   var idxs = idxs.split('|');
+
+   idxs.forEach(function(idx) {
+      markHit(idx);
+   });
+};
+
 // Marks a hit on the field
 markMiss = function(idx) {
    var $this = $("#" + idx);
 
    $this.text('☹');
+};
+
+// Marks a hits on the field
+markMisses = function(idxs) {
+   var idxs = idxs.split('|');
+
+   idxs.forEach(function(idx) {
+      markMiss(idx);
+   });
 };
 
 // Though one: refreshes the browser window to restart game
@@ -199,4 +217,8 @@ debug = function(msg) {
    $debugBox = $("#debug-box");
 
    $debugBox.prepend("<br />" + msg);
+}
+
+finish = function(count) {
+   message("The computer beat you with " + count + " shots!");
 }

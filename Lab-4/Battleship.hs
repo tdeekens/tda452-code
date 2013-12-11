@@ -202,18 +202,6 @@ sinkShip dirs fd ft c shs | (trd' try) = sinkShip ds (snd' try) ft c shs'
     try  = walkSide d fd ft c []
     shs' = shs\\(fst' try)
 
--- Temp, updates the field at the initial coordinate
--- (in the future, assumed that the filed is already updated with this hit)
-sinkShip' :: [Direction] -> Field -> Fleet -> Coord -> [Coord] -> (Field, [Coord])
-sinkShip' dirs fd ft c shs | (trd' try) = sinkShip' ds (snd' try) ft c shs'
-                           | otherwise  = ( (snd' try), shs')
-  where
-    d    = head dirs
-    ds   = tail dirs
-    try  = walkSide d fd' ft c []
-    fd'  = updateField fd [c] (Just True)
-    shs' = shs\\(fst' try)
-
 -- Shoots the filed in a given direction.
 -- Returns a list of shots (empty when a shot in given direction is impossibe,
 -- updated field and
